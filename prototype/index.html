@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReSave - AI Platform to Cut Food Waste</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold">🌱 ReSave</div>
+                    <div class="ml-4 text-sm opacity-90">AI Platform to Cut Food Waste</div>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showSection('dashboard')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">Dashboard</button>
+                    <button onclick="showSection('predictions')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">AI Predictions</button>
+                    <button onclick="showSection('donations')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">Donations</button>
+                    <button onclick="showSection('impact')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">Impact</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div id="dashboard" class="section">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100">
+                            <span class="text-2xl">🍽</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Meals Saved Today</p>
+                            <p class="text-2xl font-bold text-gray-900" id="meals-saved">247</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100">
+                            <span class="text-2xl">💰</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Cost Savings</p>
+                            <p class="text-2xl font-bold text-gray-900">₹12,450</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100">
+                            <span class="text-2xl">🌍</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">CO₂ Avoided</p>
+                            <p class="text-2xl font-bold text-gray-900">85 kg</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-orange-100">
+                            <span class="text-2xl">🤝</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Active NGOs</p>
+                            <p class="text-2xl font-bold text-gray-900">12</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">🚨 Real-time Alerts</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                        <span class="text-yellow-600 pulse-animation">⚠</span>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-yellow-800">Surplus Alert - Kitchen A</p>
+                            <p class="text-sm text-yellow-700">35 meal portions available for donation. NGOs notified.</p>
+                        </div>
+                        <button onclick="handleDonation()" class="ml-auto px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">Manage</button>
+                    </div>
+                    
+                    <div class="flex items-center p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
+                        <span class="text-green-600">✅</span>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-green-800">Successful Donation</p>
+                            <p class="text-sm text-green-700">50 meals delivered to Hope Foundation at 7:30 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Today's Prediction</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Breakfast</span>
+                            <span class="font-medium">180 portions</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Lunch</span>
+                            <span class="font-medium">320 portions</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Dinner</span>
+                            <span class="font-medium">280 portions</span>
+                        </div>
+                    </div>
+                    <button onclick="showSection('predictions')" class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">View Details</button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🗺 Nearby NGOs</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium">Hope Foundation</p>
+                                <p class="text-sm text-gray-600">0.8 km away</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium">Care Center</p>
+                                <p class="text-sm text-gray-600">1.2 km away</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
+                        </div>
+                    </div>
+                    <button onclick="showSection('donations')" class="w-full mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Manage Donations</button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏆 Achievements</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="text-2xl">🥇</span>
+                            <div class="ml-3">
+                                <p class="font-medium">Zero Waste Partner</p>
+                                <p class="text-sm text-gray-600">Level 3 Certified</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-2xl">🌟</span>
+                            <div class="ml-3">
+                                <p class="font-medium">Sustainability Champion</p>
+                                <p class="text-sm text-gray-600">1000+ meals saved</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="showSection('impact')" class="w-full mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">View Impact</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="predictions" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">🤖 AI-Powered Demand Forecasting</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Tomorrow's Predictions</h3>
+                        <canvas id="predictionChart" width="400" height="300"></canvas>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Prediction Factors</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium">Weather Impact</span>
+                                <span class="text-blue-600">Rainy (+15%)</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium">Day Type</span>
+                                <span class="text-green-600">Weekday (Normal)</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium">Special Events</span>
+                                <span class="text-orange-600">Conference (+25%)</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium">Historical Trend</span>
+                                <span class="text-purple-600">Stable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+                    <h4 class="font-semibold text-blue-900">AI Recommendation</h4>
+                    <p class="text-blue-800 mt-1">Based on weather and conference attendance, prepare 25% more lunch portions and 15% more dinner portions than usual.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📈 Accuracy Metrics</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">This Week</span>
+                            <span class="font-bold text-green-600">94.2%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">This Month</span>
+                            <span class="font-bold text-green-600">91.8%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Overall</span>
+                            <span class="font-bold text-green-600">89.5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">⚙ Model Settings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="sensitivity" class="block text-sm font-medium text-gray-700 mb-2">Prediction Sensitivity</label>
+                            <input type="range" id="sensitivity" min="1" max="10" value="7" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Conservative</span>
+                                <span>Aggressive</span>
+                            </div>
+                        </div>
+                        <button onclick="updateModel()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Update Model</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="donations" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">🤝 Smart Donation Matching</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <h3 class="text-lg font-semibold mb-4">Available Surplus Food</h3>
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold">Kitchen A - Main Cafeteria</h4>
+                                        <p class="text-sm text-gray-600">35 meal portions available</p>
+                                        <p class="text-xs text-gray-500">Expires in: 2 hours</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="matchNGO('kitchen-a')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">Auto-Match NGO</button>
+                                    <button onclick="viewDetails('kitchen-a')" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">View Details</button>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold">Kitchen B - Conference Hall</h4>
+                                        <p class="text-sm text-gray-600">20 meal portions available</p>
+                                        <p class="text-xs text-gray-500">Expires in: 4 hours</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Matched</span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <p>📍 Matched with: Hope Foundation</p>
+                                    <p>🚚 Pickup scheduled: 8:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Nearby NGOs</h3>
+                        <div class="space-y-3">
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium">Hope Foundation</h4>
+                                    <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+                                </div>
+                                <p class="text-sm text-gray-600">📍 0.8 km away</p>
+                                <p class="text-sm text-gray-600">👥 Capacity: 50 people</p>
+                                <p class="text-xs text-gray-500">Last pickup: 2 hours ago</p>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium">Care Center</h4>
+                                    <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+                                </div>
+                                <p class="text-sm text-gray-600">📍 1.2 km away</p>
+                                <p class="text-sm text-gray-600">👥 Capacity: 30 people</p>
+                                <p class="text-xs text-gray-500">Available now</p>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium">Community Kitchen</h4>
+                                    <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                                </div>
+                                <p class="text-sm text-gray-600">📍 2.1 km away</p>
+                                <p class="text-sm text-gray-600">👥 Capacity: 80 people</p>
+                                <p class="text-xs text-gray-500">Busy until 9 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Donation History</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">Today</p>
+                                <p class="text-sm text-gray-600">3 donations, 85 meals</p>
+                            </div>
+                            <span class="text-green-600 font-bold">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">This Week</p>
+                                <p class="text-sm text-gray-600">18 donations, 520 meals</p>
+                            </div>
+                            <span class="text-green-600 font-bold">✓</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">This Month</p>
+                                <p class="text-sm text-gray-600">72 donations, 2,180 meals</p>
+                            </div>
+                            <span class="text-green-600 font-bold">✓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏅 CSR Benefits</h3>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-blue-50 rounded-lg">
+                            <p class="font-medium text-blue-900">Tax Benefits Earned</p>
+                            <p class="text-2xl font-bold text-blue-600">₹45,200</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg">
+                            <p class="font-medium text-green-900">CSR Credits</p>
+                            <p class="text-2xl font-bold text-green-600">1,247 pts</p>
+                        </div>
+                        <button onclick="generateReport()" class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">Generate CSR Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="impact" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">🌍 Sustainability Impact Dashboard</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center p-6 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-xl">
+                        <div class="text-4xl mb-2">🍽</div>
+                        <div class="text-3xl font-bold">2,847</div>
+                        <div class="text-green-100">Total Meals Saved</div>
+                    </div>
+                    
+                    <div class="text-center p-6 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-xl">
+                        <div class="text-4xl mb-2">👥</div>
+                        <div class="text-3xl font-bold">1,423</div>
+                        <div class="text-blue-100">People Fed</div>
+                    </div>
+                    
+                    <div class="text-center p-6 bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-xl">
+                        <div class="text-4xl mb-2">🌱</div>
+                        <div class="text-3xl font-bold">892 kg</div>
+                        <div class="text-purple-100">CO₂ Emissions Avoided</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">📈 Monthly Impact Trend</h3>
+                        <canvas id="impactChart" width="400" height="300"></canvas>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">🎯 UN SDG Alignment</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                                <span class="text-2xl mr-3">🎯</span>
+                                <div>
+                                    <p class="font-semibold text-yellow-800">SDG 2: Zero Hunger</p>
+                                    <p class="text-sm text-yellow-700">1,423 people fed through food redistribution</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
+                                <span class="text-2xl mr-3">♻</span>
+                                <div>
+                                    <p class="font-semibold text-green-800">SDG 12: Responsible Consumption</p>
+                                    <p class="text-sm text-green-700">2,847 meals saved from waste</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+                                <span class="text-2xl mr-3">🌍</span>
+                                <div>
+                                    <p class="font-semibold text-blue-800">SDG 13: Climate Action</p>
+                                    <p class="text-sm text-blue-700">892 kg CO₂ emissions prevented</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">💰 Economic Impact</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Cost Savings</span>
+                            <span class="font-bold text-green-600">₹1,24,500</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Waste Reduction</span>
+                            <span class="font-bold text-blue-600">28%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Operational Efficiency</span>
+                            <span class="font-bold text-purple-600">+15%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Tax Benefits</span>
+                            <span class="font-bold text-orange-600">₹45,200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏆 Recognition & Badges</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                            <div class="text-3xl mb-2">🥇</div>
+                            <div class="text-sm font-medium">Zero Waste Partner</div>
+                            <div class="text-xs text-gray-600">Level 3</div>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <div class="text-3xl mb-2">🌟</div>
+                            <div class="text-sm font-medium">Sustainability Champion</div>
+                            <div class="text-xs text-gray-600">1000+ meals</div>
+                        </div>
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <div class="text-3xl mb-2">🤝</div>
+                            <div class="text-sm font-medium">Community Partner</div>
+                            <div class="text-xs text-gray-600">12 NGOs</div>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-lg">
+                            <div class="text-3xl mb-2">📊</div>
+                            <div class="text-sm font-medium">Data Pioneer</div>
+                            <div class="text-xs text-gray-600">AI Optimized</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="text-6xl mb-4">✅</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Success!</h3>
+                <p class="text-gray-600 mb-6" id="modalMessage">Action completed successfully.</p>
+                <button onclick="closeModal()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.remove('hidden');
+            
+            // Initialize charts if needed
+            if (sectionName === 'predictions') {
+                initPredictionChart();
+            } else if (sectionName === 'impact') {
+                initImpactChart();
+            }
+        }
+
+        // Chart Initialization
+        function initPredictionChart() {
+            const ctx = document.getElementById('predictionChart');
+            if (ctx && !ctx.chart) {
+                ctx.chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Breakfast', 'Lunch', 'Dinner'],
+                        datasets: [{
+                            label: 'Predicted Portions',
+                            data: [180, 320, 280],
+                            backgroundColor: ['#FEF3C7', '#DBEAFE', '#E0E7FF'],
+                            borderColor: ['#F59E0B', '#3B82F6', '#6366F1'],
+                            borderWidth: 2
+                        }, {
+                            label: 'Actual (Yesterday)',
+                            data: [175, 310, 295],
+                            backgroundColor: ['#FCA5A5', '#86EFAC', '#C4B5FD'],
+                            borderColor: ['#EF4444', '#10B981', '#8B5CF6'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function initImpactChart() {
+            const ctx = document.getElementById('impactChart');
+            if (ctx && !ctx.chart) {
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Meals Saved',
+                            data: [120, 190, 300, 500, 420, 680],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'People Fed',
+                            data: [80, 140, 220, 380, 320, 520],
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Interactive Functions
+        function handleDonation() {
+            showModal('Surplus food alert managed! NGOs have been notified and pickup is being coordinated.');
+        }
+
+        function matchNGO(kitchenId) {
+            showModal('NGO successfully matched! Hope Foundation will pick up the surplus food at 8:00 PM.');
+        }
+
+        function viewDetails(kitchenId) {
+            showModal('Kitchen details: 35 portions of mixed vegetables and rice. Prepared at 6:30 PM, expires at 10:30 PM.');
+        }
+
+        function updateModel() {
+            const sensitivity = document.getElementById('sensitivity').value;
+            // --- THIS IS THE FIX ---
+            // Changed single quotes '...' to backticks `...`
+            showModal(`AI model updated with sensitivity level ${sensitivity}. New predictions will be more ${sensitivity > 5 ? 'aggressive' : 'conservative'}.`);
+        }
+
+        function generateReport() {
+            showModal('CSR report generated successfully! The report includes all donations, tax benefits, and sustainability metrics for this quarter.');
+        }
+
+        function showModal(message) {
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('successModal').classList.remove('hidden');
+            document.getElementById('successModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            document.getElementById('successModal').classList.remove('flex');
+        }
+
+        // Real-time updates simulation
+        function updateRealTimeData() {
+            const mealsSaved = document.getElementById('meals-saved');
+            if (mealsSaved) {
+                const current = parseInt(mealsSaved.textContent);
+                mealsSaved.textContent = current + Math.floor(Math.random() * 3);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+            setInterval(updateRealTimeData, 30000); // Update every 30 seconds
+        });
+
+        // Close modal on outside click
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
