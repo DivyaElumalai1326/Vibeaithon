@@ -1,663 +1,735 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReSave - AI Platform to Cut Food Waste</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReSave - AI Platform to Cut Food Waste</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
         body {
             box-sizing: border-box;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
         }
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
         }
         .card-hover:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .pulse-animation {
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+        }
+        .notification-badge {
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0.5; }
         }
     </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <nav class="gradient-bg text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="text-2xl font-bold">🌱 ReSave</div>
-                    <div class="ml-4 text-sm opacity-90">AI Platform to Cut Food Waste</div>
-                </div>
-                <div class="flex space-x-4">
-                    <button onclick="showSection('dashboard')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">Dashboard</button>
-                    <button onclick="showSection('predictions')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">AI Predictions</button>
-                    <button onclick="showSection('donations')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">Donations</button>
-                    <button onclick="showSection('impact')" class="px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all">Impact</button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div id="dashboard" class="section">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-green-100">
-                            <span class="text-2xl">🍽</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Meals Saved Today</p>
-                            <p class="text-2xl font-bold text-gray-900" id="meals-saved">247</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-blue-100">
-                            <span class="text-2xl">💰</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Cost Savings</p>
-                            <p class="text-2xl font-bold text-gray-900">₹12,450</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-purple-100">
-                            <span class="text-2xl">🌍</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">CO₂ Avoided</p>
-                            <p class="text-2xl font-bold text-gray-900">85 kg</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-orange-100">
-                            <span class="text-2xl">🤝</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Active NGOs</p>
-                            <p class="text-2xl font-bold text-gray-900">12</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">🚨 Real-time Alerts</h2>
-                <div class="space-y-3">
-                    <div class="flex items-center p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
-                        <span class="text-yellow-600 pulse-animation">⚠</span>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-yellow-800">Surplus Alert - Kitchen A</p>
-                            <p class="text-sm text-yellow-700">35 meal portions available for donation. NGOs notified.</p>
-                        </div>
-                        <button onclick="handleDonation()" class="ml-auto px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">Manage</button>
-                    </div>
-                    
-                    <div class="flex items-center p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
-                        <span class="text-green-600">✅</span>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800">Successful Donation</p>
-                            <p class="text-sm text-green-700">50 meals delivered to Hope Foundation at 7:30 PM</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Today's Prediction</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Breakfast</span>
-                            <span class="font-medium">180 portions</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Lunch</span>
-                            <span class="font-medium">320 portions</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Dinner</span>
-                            <span class="font-medium">280 portions</span>
-                        </div>
-                    </div>
-                    <button onclick="showSection('predictions')" class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">View Details</button>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🗺 Nearby NGOs</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-medium">Hope Foundation</p>
-                                <p class="text-sm text-gray-600">0.8 km away</p>
-                            </div>
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-medium">Care Center</p>
-                                <p class="text-sm text-gray-600">1.2 km away</p>
-                            </div>
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
-                        </div>
-                    </div>
-                    <button onclick="showSection('donations')" class="w-full mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Manage Donations</button>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏆 Achievements</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center">
-                            <span class="text-2xl">🥇</span>
-                            <div class="ml-3">
-                                <p class="font-medium">Zero Waste Partner</p>
-                                <p class="text-sm text-gray-600">Level 3 Certified</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-2xl">🌟</span>
-                            <div class="ml-3">
-                                <p class="font-medium">Sustainability Champion</p>
-                                <p class="text-sm text-gray-600">1000+ meals saved</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button onclick="showSection('impact')" class="w-full mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">View Impact</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="predictions" class="section hidden">
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">🤖 AI-Powered Demand Forecasting</h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">Tomorrow's Predictions</h3>
-                        <canvas id="predictionChart" width="400" height="300"></canvas>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">Prediction Factors</h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium">Weather Impact</span>
-                                <span class="text-blue-600">Rainy (+15%)</span>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium">Day Type</span>
-                                <span class="text-green-600">Weekday (Normal)</span>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium">Special Events</span>
-                                <span class="text-orange-600">Conference (+25%)</span>
-                            </div>
-                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span class="font-medium">Historical Trend</span>
-                                <span class="text-purple-600">Stable</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-8 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
-                    <h4 class="font-semibold text-blue-900">AI Recommendation</h4>
-                    <p class="text-blue-800 mt-1">Based on weather and conference attendance, prepare 25% more lunch portions and 15% more dinner portions than usual.</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📈 Accuracy Metrics</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">This Week</span>
-                            <span class="font-bold text-green-600">94.2%</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">This Month</span>
-                            <span class="font-bold text-green-600">91.8%</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Overall</span>
-                            <span class="font-bold text-green-600">89.5%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">⚙ Model Settings</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="sensitivity" class="block text-sm font-medium text-gray-700 mb-2">Prediction Sensitivity</label>
-                            <input type="range" id="sensitivity" min="1" max="10" value="7" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>Conservative</span>
-                                <span>Aggressive</span>
-                            </div>
-                        </div>
-                        <button onclick="updateModel()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Update Model</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="donations" class="section hidden">
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">🤝 Smart Donation Matching</h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4">Available Surplus Food</h3>
-                        <div class="space-y-4">
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h4 class="font-semibold">Kitchen A - Main Cafeteria</h4>
-                                        <p class="text-sm text-gray-600">35 meal portions available</p>
-                                        <p class="text-xs text-gray-500">Expires in: 2 hours</p>
-                                    </div>
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button onclick="matchNGO('kitchen-a')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">Auto-Match NGO</button>
-                                    <button onclick="viewDetails('kitchen-a')" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">View Details</button>
-                                </div>
-                            </div>
-
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h4 class="font-semibold">Kitchen B - Conference Hall</h4>
-                                        <p class="text-sm text-gray-600">20 meal portions available</p>
-                                        <p class="text-xs text-gray-500">Expires in: 4 hours</p>
-                                    </div>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Matched</span>
-                                </div>
-                                <div class="text-sm text-gray-600">
-                                    <p>📍 Matched with: Hope Foundation</p>
-                                    <p>🚚 Pickup scheduled: 8:00 PM</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">Nearby NGOs</h3>
-                        <div class="space-y-3">
-                            <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="font-medium">Hope Foundation</h4>
-                                    <span class="w-3 h-3 bg-green-400 rounded-full"></span>
-                                </div>
-                                <p class="text-sm text-gray-600">📍 0.8 km away</p>
-                                <p class="text-sm text-gray-600">👥 Capacity: 50 people</p>
-                                <p class="text-xs text-gray-500">Last pickup: 2 hours ago</p>
-                            </div>
-
-                            <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="font-medium">Care Center</h4>
-                                    <span class="w-3 h-3 bg-green-400 rounded-full"></span>
-                                </div>
-                                <p class="text-sm text-gray-600">📍 1.2 km away</p>
-                                <p class="text-sm text-gray-600">👥 Capacity: 30 people</p>
-                                <p class="text-xs text-gray-500">Available now</p>
-                            </div>
-
-                            <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="font-medium">Community Kitchen</h4>
-                                    <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
-                                </div>
-                                <p class="text-sm text-gray-600">📍 2.1 km away</p>
-                                <p class="text-sm text-gray-600">👥 Capacity: 80 people</p>
-                                <p class="text-xs text-gray-500">Busy until 9 PM</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Donation History</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-medium">Today</p>
-                                <p class="text-sm text-gray-600">3 donations, 85 meals</p>
-                            </div>
-                            <span class="text-green-600 font-bold">✓</span>
-                        </div>
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-medium">This Week</p>
-                                <p class="text-sm text-gray-600">18 donations, 520 meals</p>
-                            </div>
-                            <span class="text-green-600 font-bold">✓</span>
-                        </div>
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-medium">This Month</p>
-                                <p class="text-sm text-gray-600">72 donations, 2,180 meals</p>
-                            </div>
-                            <span class="text-green-600 font-bold">✓</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏅 CSR Benefits</h3>
-                    <div class="space-y-4">
-                        <div class="p-3 bg-blue-50 rounded-lg">
-                            <p class="font-medium text-blue-900">Tax Benefits Earned</p>
-                            <p class="text-2xl font-bold text-blue-600">₹45,200</p>
-                        </div>
-                        <div class="p-3 bg-green-50 rounded-lg">
-                            <p class="font-medium text-green-900">CSR Credits</p>
-                            <p class="text-2xl font-bold text-green-600">1,247 pts</p>
-                        </div>
-                        <button onclick="generateReport()" class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">Generate CSR Report</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="impact" class="section hidden">
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">🌍 Sustainability Impact Dashboard</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="text-center p-6 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-xl">
-                        <div class="text-4xl mb-2">🍽</div>
-                        <div class="text-3xl font-bold">2,847</div>
-                        <div class="text-green-100">Total Meals Saved</div>
-                    </div>
-                    
-                    <div class="text-center p-6 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-xl">
-                        <div class="text-4xl mb-2">👥</div>
-                        <div class="text-3xl font-bold">1,423</div>
-                        <div class="text-blue-100">People Fed</div>
-                    </div>
-                    
-                    <div class="text-center p-6 bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-xl">
-                        <div class="text-4xl mb-2">🌱</div>
-                        <div class="text-3xl font-bold">892 kg</div>
-                        <div class="text-purple-100">CO₂ Emissions Avoided</div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">📈 Monthly Impact Trend</h3>
-                        <canvas id="impactChart" width="400" height="300"></canvas>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">🎯 UN SDG Alignment</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
-                                <span class="text-2xl mr-3">🎯</span>
-                                <div>
-                                    <p class="font-semibold text-yellow-800">SDG 2: Zero Hunger</p>
-                                    <p class="text-sm text-yellow-700">1,423 people fed through food redistribution</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
-                                <span class="text-2xl mr-3">♻</span>
-                                <div>
-                                    <p class="font-semibold text-green-800">SDG 12: Responsible Consumption</p>
-                                    <p class="text-sm text-green-700">2,847 meals saved from waste</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
-                                <span class="text-2xl mr-3">🌍</span>
-                                <div>
-                                    <p class="font-semibold text-blue-800">SDG 13: Climate Action</p>
-                                    <p class="text-sm text-blue-700">892 kg CO₂ emissions prevented</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">💰 Economic Impact</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Total Cost Savings</span>
-                            <span class="font-bold text-green-600">₹1,24,500</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Waste Reduction</span>
-                            <span class="font-bold text-blue-600">28%</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Operational Efficiency</span>
-                            <span class="font-bold text-purple-600">+15%</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Tax Benefits</span>
-                            <span class="font-bold text-orange-600">₹45,200</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏆 Recognition & Badges</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                            <div class="text-3xl mb-2">🥇</div>
-                            <div class="text-sm font-medium">Zero Waste Partner</div>
-                            <div class="text-xs text-gray-600">Level 3</div>
-                        </div>
-                        <div class="text-center p-4 bg-green-50 rounded-lg">
-                            <div class="text-3xl mb-2">🌟</div>
-                            <div class="text-sm font-medium">Sustainability Champion</div>
-                            <div class="text-xs text-gray-600">1000+ meals</div>
-                        </div>
-                        <div class="text-center p-4 bg-blue-50 rounded-lg">
-                            <div class="text-3xl mb-2">🤝</div>
-                            <div class="text-sm font-medium">Community Partner</div>
-                            <div class="text-xs text-gray-600">12 NGOs</div>
-                        </div>
-                        <div class="text-center p-4 bg-purple-50 rounded-lg">
-                            <div class="text-3xl mb-2">📊</div>
-                            <div class="text-sm font-medium">Data Pioneer</div>
-                            <div class="text-xs text-gray-600">AI Optimized</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-md mx-4">
-            <div class="text-center">
-                <div class="text-6xl mb-4">✅</div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Success!</h3>
-                <p class="text-gray-600 mb-6" id="modalMessage">Action completed successfully.</p>
-                <button onclick="closeModal()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Close</button>
-            </div>
-        </div>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="bg-gray-50 min-h-full"><!-- Navigation Header -->
+  <header class="gradient-bg text-white shadow-lg" id="main-header" style="display: none;">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+     <div class="flex items-center"><span class="text-2xl mr-3">🌱</span>
+      <h1 class="text-xl font-bold" id="platform-title">ReSave - AI Platform to Cut Food Waste</h1>
+     </div>
+     <nav class="flex items-center space-x-1"><button onclick="showPage('dashboard')" class="nav-link px-4 py-2 rounded-lg font-medium" id="nav-dashboard"> 🏠 Dashboard </button> <button onclick="showPage('donor')" class="nav-link px-4 py-2 rounded-lg font-medium" id="nav-donor" style="display: none;"> 🏨 Donor Portal </button> <button onclick="showPage('ngo')" class="nav-link px-4 py-2 rounded-lg font-medium" id="nav-ngo" style="display: none;"> 🤝 NGO Portal <span id="ngo-notification-badge" class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full notification-badge" style="display: none;">0</span> </button>
+      <div class="ml-4 flex items-center space-x-3"><span id="user-info" class="text-sm"></span> <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"> Logout </button>
+      </div>
+     </nav>
     </div>
+   </div>
+  </header><!-- Page 1: Login Page -->
+  <div id="login-page" class="page active">
+   <div class="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center px-4">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
+     <div class="text-center mb-8">
+      <div class="text-4xl mb-4">
+       🌱
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900">ReSave</h1>
+      <p class="text-gray-600 mt-2">AI Platform to Cut Food Waste</p>
+     </div>
+     <form id="login-form" class="space-y-6">
+      <div><label for="role" class="block text-sm font-medium text-gray-700 mb-2">Select Your Role</label> <select id="role" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required> <option value="">Choose your role</option> <option value="admin">ReSave Platform Admin</option> <option value="donor">Donor (Hotel/Restaurant/Organization)</option> <option value="ngo">NGO</option> </select>
+      </div>
+      <div><label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label> <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your email" required>
+      </div>
+      <div><label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label> <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your password" required>
+      </div><button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"> Sign In </button>
+     </form>
+     <div class="mt-8 text-center">
+      <div class="text-sm text-gray-600 mb-2">
+       Demo Credentials:
+      </div>
+      <div class="space-y-1 text-xs text-gray-500">
+       <div>
+        <strong>Admin:</strong> admin@resave.com / admin123
+       </div>
+       <div>
+        <strong>Donor:</strong> donor@hotel.com / donor123
+       </div>
+       <div>
+        <strong>NGO:</strong> ngo@helpfood.org / ngo123
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Page 2: Dashboard (ReSave Platform Main Page) -->
+  <div id="dashboard-page" class="page">
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><!-- Hero Section -->
+    <div class="text-center mb-16">
+     <div class="text-6xl mb-6">
+      🌱
+     </div>
+     <h2 class="text-4xl font-bold text-gray-900 mb-4" id="welcome-message">Welcome to ReSave Platform</h2>
+     <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">AI-powered platform connecting food donors with NGOs to reduce food waste and help communities in need.</p>
+    </div><!-- Real-time Statistics -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
+     <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">Live Platform Impact</h3>
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="text-center">
+       <div class="text-3xl font-bold text-blue-600 mb-2" id="meals-saved">
+        1,250
+       </div>
+       <div class="text-gray-600">
+        Meals Saved
+       </div>
+      </div>
+      <div class="text-center">
+       <div class="text-3xl font-bold text-green-600 mb-2" id="active-donors">
+        45
+       </div>
+       <div class="text-gray-600">
+        Active Donors
+       </div>
+      </div>
+      <div class="text-center">
+       <div class="text-3xl font-bold text-purple-600 mb-2" id="ngo-partners">
+        28
+       </div>
+       <div class="text-gray-600">
+        NGO Partners
+       </div>
+      </div>
+      <div class="text-center">
+       <div class="text-3xl font-bold text-orange-600 mb-2" id="success-rate">
+        95%
+       </div>
+       <div class="text-gray-600">
+        Success Rate
+       </div>
+      </div>
+     </div>
+    </div><!-- AI Predictions -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
+     <h3 class="text-2xl font-bold text-gray-900 mb-6">🤖 AI Predictions &amp; Insights</h3>
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-blue-50 rounded-lg p-6">
+       <h4 class="text-lg font-semibold text-blue-900 mb-3">Food Waste Prediction</h4>
+       <p class="text-blue-800 mb-4">Based on historical data, we predict 2,340 kg of food waste can be prevented this month.</p>
+       <div class="bg-blue-200 rounded-full h-4">
+        <div class="bg-blue-600 h-4 rounded-full" style="width: 78%"></div>
+       </div>
+       <p class="text-sm text-blue-700 mt-2">78% reduction target achieved</p>
+      </div>
+      <div class="bg-green-50 rounded-lg p-6">
+       <h4 class="text-lg font-semibold text-green-900 mb-3">Optimal Matching</h4>
+       <p class="text-green-800 mb-4">AI suggests 15 new donor-NGO partnerships for maximum impact.</p>
+       <div class="bg-green-200 rounded-full h-4">
+        <div class="bg-green-600 h-4 rounded-full" style="width: 92%"></div>
+       </div>
+       <p class="text-sm text-green-700 mt-2">92% matching efficiency</p>
+      </div>
+     </div>
+    </div><!-- Recent Donations Activity -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
+     <h3 class="text-2xl font-bold text-gray-900 mb-6">📊 Recent Donations Activity</h3>
+     <div id="recent-donations" class="space-y-4"><!-- Recent donations will be populated here -->
+     </div>
+    </div><!-- Features Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+     <div class="card-hover bg-white rounded-xl shadow-lg p-8 text-center">
+      <div class="text-4xl mb-4">
+       🍽️
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Food Donation</h3>
+      <p class="text-gray-600">Hotels and restaurants can easily donate excess food with AI-powered matching.</p>
+     </div>
+     <div class="card-hover bg-white rounded-xl shadow-lg p-8 text-center">
+      <div class="text-4xl mb-4">
+       🔔
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-3">Real-time Alerts</h3>
+      <p class="text-gray-600">NGOs receive instant notifications when food becomes available nearby.</p>
+     </div>
+     <div class="card-hover bg-white rounded-xl shadow-lg p-8 text-center">
+      <div class="text-4xl mb-4">
+       🤖
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-3">AI Optimization</h3>
+      <p class="text-gray-600">Machine learning algorithms optimize food distribution and reduce waste.</p>
+     </div>
+    </div>
+   </main>
+  </div><!-- Page 3: Donor Portal -->
+  <div id="donor-page" class="page">
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- Donor Header -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+     <div class="flex items-center">
+      <div class="text-4xl mr-4">
+       🏨
+      </div>
+      <div>
+       <h2 class="text-2xl font-bold text-gray-900">Donor Portal</h2>
+       <p class="text-gray-600">Manage your food donations and help reduce waste</p>
+       <p class="text-sm text-blue-600 mt-1" id="donor-organization">Organization: Loading...</p>
+      </div>
+     </div>
+    </div><!-- Add Food Donation Form -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+     <h3 class="text-xl font-bold text-gray-900 mb-6">🍽️ Add New Food Donation</h3>
+     <form id="donation-form" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div><label for="food-type" class="block text-sm font-medium text-gray-700 mb-2">Food Type</label> <input type="text" id="food-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Mixed Vegetables, Rice &amp; Curry" required>
+       </div>
+       <div><label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity (portions)</label> <input type="number" id="quantity" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., 50" min="1" required>
+       </div>
+       <div><label for="expiry-date" class="block text-sm font-medium text-gray-700 mb-2">Best Before Date</label> <input type="date" id="expiry-date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+       </div>
+       <div><label for="expiry-time" class="block text-sm font-medium text-gray-700 mb-2">Best Before Time</label> <input type="time" id="expiry-time" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+       </div>
+       <div><label for="location" class="block text-sm font-medium text-gray-700 mb-2">Pickup Location</label> <input type="text" id="location" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Downtown Kitchen, Main Street" required>
+       </div>
+       <div><label for="contact" class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label> <input type="tel" id="contact" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., +1234567890" required>
+       </div>
+      </div>
+      <div><label for="description" class="block text-sm font-medium text-gray-700 mb-2">Additional Notes (Optional)</label> <textarea id="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Any special instructions or details about the food..."></textarea>
+      </div><button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"> 🚀 Add Donation &amp; Notify Platform </button>
+     </form>
+    </div><!-- Your Active Donations -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+     <h3 class="text-xl font-bold text-gray-900 mb-6">📋 Your Active Donations</h3>
+     <div id="donations-list" class="space-y-4"><!-- Donations will be populated here -->
+     </div>
+    </div>
+   </main>
+  </div><!-- Page 4: NGO Portal -->
+  <div id="ngo-page" class="page">
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- NGO Header -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+     <div class="flex items-center justify-between">
+      <div class="flex items-center">
+       <div class="text-4xl mr-4">
+        🤝
+       </div>
+       <div>
+        <h2 class="text-2xl font-bold text-gray-900">NGO Portal</h2>
+        <p class="text-gray-600">Find and claim available food donations</p>
+        <p class="text-sm text-green-600 mt-1" id="ngo-organization">Organization: Loading...</p>
+       </div>
+      </div><button onclick="enableNotifications()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"> 🔔 Enable Notifications </button>
+     </div>
+    </div><!-- Notifications Panel -->
+    <div id="notifications-panel" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8" style="display: none;">
+     <h3 class="text-lg font-bold text-blue-900 mb-4">🔔 Recent Notifications</h3>
+     <div id="notifications-list" class="space-y-2"><!-- Notifications will be added here -->
+     </div>
+    </div><!-- Available Food Donations -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+     <h3 class="text-xl font-bold text-gray-900 mb-6">🍽️ Available Food Donations</h3>
+     <div id="available-food-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Available food items will be populated here -->
+     </div>
+    </div>
+   </main>
+  </div><!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8 mt-16" id="main-footer" style="display: none;">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <p id="footer-text">© 2024 ReSave. All rights reserved.</p>
+    <p class="text-gray-400 mt-2">Reducing food waste through AI-powered solutions</p>
+   </div>
+  </footer>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            platform_title: "ReSave - AI Platform to Cut Food Waste",
+            welcome_message: "Welcome to ReSave Platform",
+            footer_text: "© 2024 ReSave. All rights reserved."
+        };
 
-    <script>
-        // Section Navigation
-        function showSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
+        // Application state
+        let currentUser = null;
+        let currentPage = 'login';
+        let donations = [];
+        let notifications = [];
+        let platformStats = {
+            mealsSaved: 1250,
+            activeDonors: 45,
+            ngoPartners: 28,
+            successRate: 95
+        };
+
+        // Demo credentials
+        const validCredentials = {
+            'admin@resave.com': { 
+                password: 'admin123', 
+                role: 'admin',
+                name: 'ReSave Admin',
+                organization: 'ReSave Platform'
+            },
+            'donor@hotel.com': { 
+                password: 'donor123', 
+                role: 'donor',
+                name: 'Grand Hotel Manager',
+                organization: 'Grand Hotel Downtown'
+            },
+            'ngo@helpfood.org': { 
+                password: 'ngo123', 
+                role: 'ngo',
+                name: 'Food Help NGO',
+                organization: 'Community Food Network'
+            }
+        };
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
             });
             
-            // Show selected section
-            document.getElementById(sectionName).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
             
-            // Initialize charts if needed
-            if (sectionName === 'predictions') {
-                initPredictionChart();
-            } else if (sectionName === 'impact') {
-                initImpactChart();
+            document.getElementById(pageId + '-page').classList.add('active');
+            if (document.getElementById('nav-' + pageId)) {
+                document.getElementById('nav-' + pageId).classList.add('active');
+            }
+            
+            currentPage = pageId;
+            
+            // Update page-specific content
+            if (pageId === 'dashboard') {
+                updateDashboard();
+            } else if (pageId === 'ngo') {
+                renderAvailableFood();
             }
         }
 
-        // Chart Initialization
-        function initPredictionChart() {
-            const ctx = document.getElementById('predictionChart');
-            if (ctx && !ctx.chart) {
-                ctx.chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Breakfast', 'Lunch', 'Dinner'],
-                        datasets: [{
-                            label: 'Predicted Portions',
-                            data: [180, 320, 280],
-                            backgroundColor: ['#FEF3C7', '#DBEAFE', '#E0E7FF'],
-                            borderColor: ['#F59E0B', '#3B82F6', '#6366F1'],
-                            borderWidth: 2
-                        }, {
-                            label: 'Actual (Yesterday)',
-                            data: [175, 310, 295],
-                            backgroundColor: ['#FCA5A5', '#86EFAC', '#C4B5FD'],
-                            borderColor: ['#EF4444', '#10B981', '#8B5CF6'],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+        // Login functionality
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            
+            if (validCredentials[email] && 
+                validCredentials[email].password === password && 
+                validCredentials[email].role === role) {
+                
+                currentUser = validCredentials[email];
+                currentUser.email = email;
+                
+                // Show main interface
+                document.getElementById('main-header').style.display = 'block';
+                document.getElementById('main-footer').style.display = 'block';
+                
+                // Configure navigation based on role
+                if (role === 'admin') {
+                    document.getElementById('nav-donor').style.display = 'block';
+                    document.getElementById('nav-ngo').style.display = 'block';
+                    showPage('dashboard');
+                } else if (role === 'donor') {
+                    document.getElementById('nav-donor').style.display = 'block';
+                    showPage('donor');
+                    document.getElementById('donor-organization').textContent = Organization: ${currentUser.organization};
+                } else if (role === 'ngo') {
+                    document.getElementById('nav-ngo').style.display = 'block';
+                    showPage('ngo');
+                    document.getElementById('ngo-organization').textContent = Organization: ${currentUser.organization};
+                }
+                
+                // Update user info
+                document.getElementById('user-info').textContent = ${currentUser.name} (${role.toUpperCase()});
+                
+                showMessage(Welcome ${currentUser.name}! Successfully logged in as ${role.toUpperCase()}., 'success');
+            } else {
+                showMessage('Invalid credentials. Please check your email, password, and role.', 'error');
             }
-        }
-
-        function initImpactChart() {
-            const ctx = document.getElementById('impactChart');
-            if (ctx && !ctx.chart) {
-                ctx.chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'Meals Saved',
-                            data: [120, 190, 300, 500, 420, 680],
-                            borderColor: '#10B981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            tension: 0.4
-                        }, {
-                            label: 'People Fed',
-                            data: [80, 140, 220, 380, 320, 520],
-                            borderColor: '#3B82F6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // Interactive Functions
-        function handleDonation() {
-            showModal('Surplus food alert managed! NGOs have been notified and pickup is being coordinated.');
-        }
-
-        function matchNGO(kitchenId) {
-            showModal('NGO successfully matched! Hope Foundation will pick up the surplus food at 8:00 PM.');
-        }
-
-        function viewDetails(kitchenId) {
-            showModal('Kitchen details: 35 portions of mixed vegetables and rice. Prepared at 6:30 PM, expires at 10:30 PM.');
-        }
-
-        function updateModel() {
-            const sensitivity = document.getElementById('sensitivity').value;
-            // --- THIS IS THE FIX ---
-            // Changed single quotes '...' to backticks `...`
-            showModal(`AI model updated with sensitivity level ${sensitivity}. New predictions will be more ${sensitivity > 5 ? 'aggressive' : 'conservative'}.`);
-        }
-
-        function generateReport() {
-            showModal('CSR report generated successfully! The report includes all donations, tax benefits, and sustainability metrics for this quarter.');
-        }
-
-        function showModal(message) {
-            document.getElementById('modalMessage').textContent = message;
-            document.getElementById('successModal').classList.remove('hidden');
-            document.getElementById('successModal').classList.add('flex');
-        }
-
-        function closeModal() {
-            document.getElementById('successModal').classList.add('hidden');
-            document.getElementById('successModal').classList.remove('flex');
-        }
-
-        // Real-time updates simulation
-        function updateRealTimeData() {
-            const mealsSaved = document.getElementById('meals-saved');
-            if (mealsSaved) {
-                const current = parseInt(mealsSaved.textContent);
-                mealsSaved.textContent = current + Math.floor(Math.random() * 3);
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            showSection('dashboard');
-            setInterval(updateRealTimeData, 30000); // Update every 30 seconds
         });
 
-        // Close modal on outside click
-        document.getElementById('successModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+        // Logout functionality
+        function logout() {
+            currentUser = null;
+            document.getElementById('main-header').style.display = 'none';
+            document.getElementById('main-footer').style.display = 'none';
+            document.getElementById('login-form').reset();
+            
+            // Hide role-specific navigation
+            document.getElementById('nav-donor').style.display = 'none';
+            document.getElementById('nav-ngo').style.display = 'none';
+            
+            showPage('login');
+            showMessage('Logged out successfully.', 'info');
+        }
+
+        // Donor functionality
+        document.getElementById('donation-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const foodType = document.getElementById('food-type').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const expiryDate = document.getElementById('expiry-date').value;
+            const expiryTime = document.getElementById('expiry-time').value;
+            const location = document.getElementById('location').value;
+            const contact = document.getElementById('contact').value;
+            const description = document.getElementById('description').value;
+            
+            // Validate future date
+            const expiryDateTime = new Date(${expiryDate}T${expiryTime});
+            if (expiryDateTime <= new Date()) {
+                showMessage('Best before date and time must be in the future', 'error');
+                return;
             }
+            
+            const donation = {
+                id: Date.now(),
+                foodType,
+                quantity,
+                expiryDateTime: expiryDateTime.toISOString(),
+                location,
+                contact,
+                description,
+                status: 'available',
+                donorName: currentUser.organization,
+                donorEmail: currentUser.email,
+                createdAt: new Date().toISOString()
+            };
+            
+            donations.push(donation);
+            
+            // Update platform statistics
+            platformStats.mealsSaved += quantity;
+            platformStats.activeDonors = Math.max(platformStats.activeDonors, donations.length);
+            
+            // Send notification to ReSave platform and NGOs
+            const notificationMessage = 🍽️ New donation: ${quantity} portions of ${foodType} from ${currentUser.organization};
+            addNotification(notificationMessage);
+            
+            // Clear form
+            document.getElementById('donation-form').reset();
+            
+            // Update displays
+            renderDonations();
+            updateDashboard();
+            
+            showMessage('Food donation added successfully! ReSave platform and NGOs have been notified.', 'success');
+        });
+
+        function renderDonations() {
+            const donationsList = document.getElementById('donations-list');
+            
+            if (donations.length === 0) {
+                donationsList.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-4">🍽️</div>
+                        <p class="text-gray-600">No donations yet. Add your first donation above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            donationsList.innerHTML = donations.map(donation => `
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-semibold text-lg text-gray-900">${donation.foodType}</h4>
+                            <p class="text-gray-600">${donation.quantity} portions</p>
+                            <p class="text-sm text-gray-500 mt-1">
+                                <strong>Location:</strong> ${donation.location}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <strong>Contact:</strong> ${donation.contact}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                <strong>Best Before:</strong> ${new Date(donation.expiryDateTime).toLocaleString()}
+                            </p>
+                            ${donation.description ? <p class="text-sm text-gray-500 mt-2">${donation.description}</p> : ''}
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium ${
+                            donation.status === 'available' ? 'bg-green-100 text-green-800' :
+                            donation.status === 'claimed' ? 'bg-blue-100 text-blue-800' :
+                            'bg-red-100 text-red-800'
+                        }">
+                            ${donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
+                        </span>
+                    </div>
+                    ${donation.status === 'available' ? `
+                        <button onclick="markAsExpired(${donation.id})" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                            Mark as Expired
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function markAsExpired(donationId) {
+            const donation = donations.find(d => d.id === donationId);
+            if (donation) {
+                donation.status = 'expired';
+                renderDonations();
+                renderAvailableFood();
+                showMessage('Donation marked as expired', 'info');
+            }
+        }
+
+        // NGO functionality
+        function enableNotifications() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showMessage('Notifications enabled! You\'ll receive alerts for new food donations.', 'success');
+                        document.getElementById('notifications-panel').style.display = 'block';
+                    }
+                });
+            } else {
+                showMessage('Browser notifications are not supported', 'error');
+            }
+        }
+
+        function addNotification(message) {
+            const notification = {
+                id: Date.now(),
+                message,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            notifications.unshift(notification);
+            notifications = notifications.slice(0, 10); // Keep last 10
+            
+            renderNotifications();
+            updateNotificationBadge();
+            
+            // Show browser notification if permission granted
+            if (Notification.permission === 'granted') {
+                new Notification('ReSave - New Food Available!', {
+                    body: message,
+                    icon: '🍽️'
+                });
+            }
+        }
+
+        function renderNotifications() {
+            const notificationsList = document.getElementById('notifications-list');
+            
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = '<p class="text-blue-600 text-sm">No recent notifications</p>';
+                return;
+            }
+            
+            notificationsList.innerHTML = notifications.map(notification => `
+                <div class="bg-white p-4 rounded-lg border border-blue-100 shadow-sm">
+                    <p class="text-sm text-blue-800">${notification.message}</p>
+                    <p class="text-xs text-blue-600 mt-1">${notification.timestamp}</p>
+                </div>
+            `).join('');
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('ngo-notification-badge');
+            if (notifications.length > 0) {
+                badge.textContent = notifications.length;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderAvailableFood() {
+            const availableFoodList = document.getElementById('available-food-list');
+            const availableDonations = donations.filter(d => d.status === 'available');
+            
+            if (availableDonations.length === 0) {
+                availableFoodList.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-4xl mb-4">🍽️</div>
+                        <p class="text-gray-600">No food donations available at the moment.</p>
+                        <p class="text-sm text-gray-500 mt-2">Check back later or enable notifications to get alerts!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            availableFoodList.innerHTML = availableDonations.map(donation => `
+                <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-lg text-gray-900">${donation.foodType}</h4>
+                        <p class="text-gray-600">${donation.quantity} portions available</p>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <strong>From:</strong> ${donation.donorName}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <strong>Location:</strong> ${donation.location}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <strong>Contact:</strong> ${donation.contact}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <strong>Best Before:</strong> ${new Date(donation.expiryDateTime).toLocaleString()}
+                        </p>
+                        ${donation.description ? <p class="text-sm text-gray-500 mt-2 italic">${donation.description}</p> : ''}
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Available
+                        </span>
+                        <button onclick="claimFood(${donation.id})" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                            Claim Food
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function claimFood(donationId) {
+            const donation = donations.find(d => d.id === donationId);
+            if (donation) {
+                donation.status = 'claimed';
+                donation.claimedBy = currentUser.organization;
+                donation.claimedAt = new Date().toISOString();
+                
+                renderAvailableFood();
+                renderDonations();
+                
+                showMessage(Successfully claimed ${donation.foodType}! Please coordinate pickup with ${donation.donorName}., 'success');
+            }
+        }
+
+        // Dashboard functionality
+        function updateDashboard() {
+            document.getElementById('meals-saved').textContent = platformStats.mealsSaved.toLocaleString();
+            document.getElementById('active-donors').textContent = platformStats.activeDonors;
+            document.getElementById('ngo-partners').textContent = platformStats.ngoPartners;
+            document.getElementById('success-rate').textContent = platformStats.successRate + '%';
+            
+            renderRecentDonations();
+        }
+
+        function renderRecentDonations() {
+            const recentDonations = document.getElementById('recent-donations');
+            const recent = donations.slice(-5).reverse();
+            
+            if (recent.length === 0) {
+                recentDonations.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-4">📊</div>
+                        <p class="text-gray-600">No recent donations to display.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            recentDonations.innerHTML = recent.map(donation => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <h4 class="font-medium text-gray-900">${donation.foodType}</h4>
+                        <p class="text-sm text-gray-600">${donation.quantity} portions from ${donation.donorName}</p>
+                        <p class="text-xs text-gray-500">${new Date(donation.createdAt).toLocaleString()}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium ${
+                        donation.status === 'available' ? 'bg-green-100 text-green-800' :
+                        donation.status === 'claimed' ? 'bg-blue-100 text-blue-800' :
+                        'bg-red-100 text-red-800'
+                    }">
+                        ${donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Utility functions
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 ${
+                type === 'success' ? 'bg-green-600' :
+                type === 'error' ? 'bg-red-600' :
+                type === 'info' ? 'bg-blue-600' :
+                'bg-gray-600'
+            }`;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Element SDK integration
+        async function onConfigChange(config) {
+            const platformTitle = config.platform_title || defaultConfig.platform_title;
+            const welcomeMessage = config.welcome_message || defaultConfig.welcome_message;
+            const footerText = config.footer_text || defaultConfig.footer_text;
+
+            const titleElement = document.getElementById('platform-title');
+            const welcomeElement = document.getElementById('welcome-message');
+            const footerElement = document.getElementById('footer-text');
+
+            if (titleElement) titleElement.textContent = platformTitle;
+            if (welcomeElement) welcomeElement.textContent = welcomeMessage;
+            if (footerElement) footerElement.textContent = footerText;
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["platform_title", config.platform_title || defaultConfig.platform_title],
+                    ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+                    ["footer_text", config.footer_text || defaultConfig.footer_text]
+                ])
+            });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expiry-date').setAttribute('min', today);
+            
+            renderDonations();
+            renderNotifications();
+            updateDashboard();
         });
     </script>
-</body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99629c4710ecc795',t:'MTc2MTc0MDI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
