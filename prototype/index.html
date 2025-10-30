@@ -43,11 +43,58 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        .modal img, .modal video {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+        }
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="bg-gray-50 min-h-full"><!-- Navigation Header -->
+ <body class="bg-gray-50 min-h-full"><!-- Media Modal -->
+  <div id="media-modal" class="modal">
+   <div class="modal-content"><span class="close-modal" onclick="closeMediaModal()">×</span>
+    <div id="modal-media-container"></div>
+    <div id="modal-caption" class="text-white text-center mt-4 text-sm"></div>
+   </div>
+  </div><!-- Navigation Header -->
   <header class="gradient-bg text-white shadow-lg" id="main-header" style="display: none;">
    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
@@ -79,22 +126,6 @@
       <div><label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label> <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your password" required>
       </div><button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"> Sign In </button>
      </form>
-     <div class="mt-8 text-center">
-      <div class="text-sm text-gray-600 mb-2">
-       Demo Credentials:
-      </div>
-      <div class="space-y-1 text-xs text-gray-500">
-       <div>
-        <strong>Admin:</strong> admin@resave.com / admin123
-       </div>
-       <div>
-        <strong>Donor:</strong> donor@hotel.com / donor123
-       </div>
-       <div>
-        <strong>NGO:</strong> ngo@helpfood.org / ngo123
-       </div>
-      </div>
-     </div>
     </div>
    </div>
   </div><!-- Page 2: Dashboard (ReSave Platform Main Page) -->
@@ -146,7 +177,7 @@
     </div><!-- AI Predictions -->
     <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
      <h3 class="text-2xl font-bold text-gray-900 mb-6">🤖 AI Predictions &amp; Insights</h3>
-     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-blue-50 rounded-lg p-6">
        <h4 class="text-lg font-semibold text-blue-900 mb-3">Food Waste Prediction</h4>
        <p class="text-blue-800 mb-4">Based on historical data, we predict 2,340 kg of food waste can be prevented this month.</p>
@@ -163,6 +194,39 @@
        </div>
        <p class="text-sm text-green-700 mt-2">92% matching efficiency</p>
       </div>
+      <div class="bg-purple-50 rounded-lg p-6">
+       <h4 class="text-lg font-semibold text-purple-900 mb-3">Impact Forecast</h4>
+       <p class="text-purple-800 mb-4">AI predicts 3,500 meals will be saved in the next 30 days through optimized distribution.</p>
+       <div class="bg-purple-200 rounded-full h-4">
+        <div class="bg-purple-600 h-4 rounded-full" style="width: 85%"></div>
+       </div>
+       <p class="text-sm text-purple-700 mt-2">85% forecast confidence</p>
+      </div>
+     </div>
+    </div><!-- All Donations Data Table -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
+     <h3 class="text-2xl font-bold text-gray-900 mb-6">📊 All Food Donations Data</h3>
+     <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+         <th class="px-6 py-3">Food Type</th>
+         <th class="px-6 py-3">Donor</th>
+         <th class="px-6 py-3">Quantity</th>
+         <th class="px-6 py-3">Location</th>
+         <th class="px-6 py-3">Status</th>
+         <th class="px-6 py-3">Date Added</th>
+         <th class="px-6 py-3">Claimed By</th>
+        </tr>
+       </thead>
+       <tbody id="all-donations-table"><!-- Sample data will be populated here -->
+       </tbody>
+      </table>
+     </div>
+    </div><!-- NGO Claims Summary -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
+     <h3 class="text-2xl font-bold text-gray-900 mb-6">🤝 NGO Claims Summary</h3>
+     <div id="ngo-claims-summary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- NGO claims will be populated here -->
      </div>
     </div><!-- Recent Donations Activity -->
     <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
@@ -208,6 +272,84 @@
        <p class="text-sm text-blue-600 mt-1" id="donor-organization">Organization: Loading...</p>
       </div>
      </div>
+    </div><!-- CSR Benefits & Profits -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+     <h3 class="text-xl font-bold text-gray-900 mb-6">💰 CSR Benefits &amp; Economic Impact</h3>
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-green-50 rounded-lg p-4 text-center">
+       <div class="text-2xl font-bold text-green-600 mb-2">
+        ₹45,000
+       </div>
+       <div class="text-sm text-green-800">
+        Tax Deductions Earned
+       </div>
+      </div>
+      <div class="bg-blue-50 rounded-lg p-4 text-center">
+       <div class="text-2xl font-bold text-blue-600 mb-2">
+        92%
+       </div>
+       <div class="text-sm text-blue-800">
+        CSR Compliance Score
+       </div>
+      </div>
+      <div class="bg-purple-50 rounded-lg p-4 text-center">
+       <div class="text-2xl font-bold text-purple-600 mb-2">
+        +15%
+       </div>
+       <div class="text-sm text-purple-800">
+        Brand Value Increase
+       </div>
+      </div>
+      <div class="bg-orange-50 rounded-lg p-4 text-center">
+       <div class="text-2xl font-bold text-orange-600 mb-2">
+        ₹12,500
+       </div>
+       <div class="text-sm text-orange-800">
+        Waste Disposal Savings
+       </div>
+      </div>
+     </div>
+     <div class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-6">
+      <h4 class="text-lg font-semibold text-gray-900 mb-4">🌍 Environmental Impact</h4>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+       <div class="text-center">
+        <div class="text-xl font-bold text-green-700">
+         245 kg
+        </div>
+        <div class="text-sm text-gray-600">
+         CO₂ Reduced
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-xl font-bold text-blue-700">
+         1,200 L
+        </div>
+        <div class="text-sm text-gray-600">
+         Water Saved
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-xl font-bold text-purple-700">
+         320
+        </div>
+        <div class="text-sm text-gray-600">
+         People Fed
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-xl font-bold text-orange-700">
+         ⭐⭐⭐⭐⭐
+        </div>
+        <div class="text-sm text-gray-600">
+         Sustainability Rating
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <h4 class="font-semibold text-yellow-800 mb-2">💡 Total Economic Benefit: ₹57,500</h4>
+      <p class="text-sm text-yellow-700">Your food donations have generated significant economic and environmental returns while supporting community welfare.</p>
+     </div>
     </div><!-- Add Food Donation Form -->
     <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
      <h3 class="text-xl font-bold text-gray-900 mb-6">🍽️ Add New Food Donation</h3>
@@ -225,13 +367,49 @@
        </div>
        <div><label for="contact" class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label> <input type="tel" id="contact" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., +1234567890" required>
        </div>
+      </div><!-- Target Audience Selection -->
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+       <h4 class="text-lg font-semibold text-purple-900 mb-4">👥 Target Audience</h4>
+       <p class="text-sm text-purple-800 mb-4">Select who this food is most suitable for. This helps NGOs match donations with their beneficiaries' specific needs.</p>
+       <div class="grid grid-cols-2 md:grid-cols-3 gap-3"><label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-general" value="general" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">👨‍👩‍👧‍👦 General Public</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-children" value="children" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">👶 Children</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-elderly" value="elderly" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">👴 Elderly</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-diabetic" value="diabetic" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🩺 Diabetic-Friendly</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-vegetarian" value="vegetarian" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🥬 Vegetarian</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-vegan" value="vegan" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🌱 Vegan</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-pregnant" value="pregnant" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🤱 Pregnant Women</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-lactose-free" value="lactose-free" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🥛 Lactose-Free</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-gluten-free" value="gluten-free" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🌾 Gluten-Free</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-low-sodium" value="low-sodium" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🧂 Low Sodium</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-homeless" value="homeless" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🏠 Homeless Shelters</span> </label> <label class="flex items-center space-x-2 cursor-pointer"> <input type="checkbox" id="audience-students" value="students" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500"> <span class="text-sm text-purple-800">🎓 Students</span> </label>
+       </div>
+       <div class="mt-4 p-3 bg-purple-100 rounded-lg">
+        <p class="text-xs text-purple-700">💡 <strong>Tip:</strong> Select multiple categories if applicable. This helps NGOs serving specific communities find the most suitable donations for their beneficiaries.</p>
+       </div>
       </div>
       <div><label for="description" class="block text-sm font-medium text-gray-700 mb-2">Additional Notes (Optional)</label> <textarea id="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Any special instructions or details about the food..."></textarea>
+      </div><!-- Photo & Video Documentation Section -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+       <h4 class="text-lg font-semibold text-blue-900 mb-4">📸 Food Quality Documentation</h4>
+       <p class="text-sm text-blue-800 mb-4">Build trust with NGOs by providing visual proof of food quality and freshness. This helps ensure transparency and shows that you're donating fresh, quality food.</p><!-- Photo Upload -->
+       <div class="mb-6"><label class="block text-sm font-medium text-blue-900 mb-3">📷 Food Photos (Recommended)</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+         <div><label for="preparation-photo" class="block text-xs text-blue-700 mb-2">During Preparation</label> <input type="file" id="preparation-photo" accept="image/*" capture="environment" class="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+          <p class="text-xs text-blue-600 mt-1">Show ingredients and cooking process</p>
+         </div>
+         <div><label for="final-photo" class="block text-xs text-blue-700 mb-2">Final Prepared Food</label> <input type="file" id="final-photo" accept="image/*" capture="environment" class="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+          <p class="text-xs text-blue-600 mt-1">Show the finished, ready-to-serve food</p>
+         </div>
+        </div>
+       </div><!-- Video Upload -->
+       <div class="mb-4"><label for="preparation-video" class="block text-sm font-medium text-blue-900 mb-2">🎥 Preparation Video (Optional)</label> <input type="file" id="preparation-video" accept="video/mp4,video/webm,video/mov,video/quicktime,video/*" capture="environment" class="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+        <div class="mt-2 space-y-1">
+         <p class="text-xs text-blue-600">Short video showing food preparation or final result (max 30 seconds recommended)</p>
+         <p class="text-xs text-green-600"><strong>✅ Best formats:</strong> MP4, WebM, MOV (up to 100MB)</p>
+         <p class="text-xs text-orange-600"><strong>⚠️ May not work:</strong> WMV, FLV, MKV - convert to MP4 first</p>
+        </div>
+       </div><!-- Quick Camera Buttons -->
+       <div class="flex flex-wrap gap-3"><button type="button" onclick="openCamera('photo')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"> 📸 Take Photo Now </button> <button type="button" onclick="openCamera('video')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"> 🎥 Record Video Now </button>
+       </div><!-- Preview Area -->
+       <div id="media-preview" class="mt-4 hidden">
+        <h5 class="text-sm font-medium text-blue-900 mb-2">Preview:</h5>
+        <div id="preview-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+       </div>
       </div><button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"> 🚀 Add Donation &amp; Notify Platform </button>
      </form>
-    </div><!-- Your Active Donations -->
+    </div><!-- Your Donations History -->
     <div class="bg-white rounded-xl shadow-lg p-8">
-     <h3 class="text-xl font-bold text-gray-900 mb-6">📋 Your Active Donations</h3>
+     <h3 class="text-xl font-bold text-gray-900 mb-6">📋 Your Donations History</h3>
      <div id="donations-list" class="space-y-4"><!-- Donations will be populated here -->
      </div>
     </div>
@@ -259,7 +437,11 @@
      </div>
     </div><!-- Available Food Donations -->
     <div class="bg-white rounded-xl shadow-lg p-8">
-     <h3 class="text-xl font-bold text-gray-900 mb-6">🍽️ Available Food Donations</h3>
+     <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-bold text-gray-900">🍽️ Available Food Donations</h3>
+      <div class="flex items-center gap-4"><label for="audience-filter" class="text-sm font-medium text-gray-700">Filter by Audience:</label> <select id="audience-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"> <option value="">All Donations</option> <option value="general">👨‍👩‍👧‍👦 General Public</option> <option value="children">👶 Children</option> <option value="elderly">👴 Elderly</option> <option value="diabetic">🩺 Diabetic-Friendly</option> <option value="vegetarian">🥬 Vegetarian</option> <option value="vegan">🌱 Vegan</option> <option value="pregnant">🤱 Pregnant Women</option> <option value="lactose-free">🥛 Lactose-Free</option> <option value="gluten-free">🌾 Gluten-Free</option> <option value="low-sodium">🧂 Low Sodium</option> <option value="homeless">🏠 Homeless Shelters</option> <option value="students">🎓 Students</option> </select>
+      </div>
+     </div>
      <div id="available-food-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Available food items will be populated here -->
      </div>
     </div>
@@ -290,6 +472,144 @@
             ngoPartners: 28,
             successRate: 95
         };
+        let mediaFiles = {
+            preparationPhoto: null,
+            finalPhoto: null,
+            preparationVideo: null,
+            preparationVideoData: null
+        };
+
+        // Sample donations for NGO page with media
+        let sampleDonations = [
+            {
+                id: 1001,
+                foodType: "Mixed Vegetables Curry",
+                quantity: 75,
+                expiryDateTime: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+                location: "Grand Hotel Downtown - Main Kitchen",
+                contact: "+91-9876543210",
+                description: "Fresh mixed vegetable curry with rice. Prepared today morning, suitable for immediate consumption.",
+                status: 'available',
+                donorName: "Grand Hotel Downtown",
+                donorEmail: "kitchen@grandhotel.com",
+                createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                hasPhotos: true,
+                hasVideo: true,
+                mediaCount: 3,
+                qualityVerified: true,
+                targetAudience: ['general', 'vegetarian', 'diabetic', 'elderly'],
+                samplePhotos: [
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzRmNzMzZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkN1cnJ5IFByZXBhcmF0aW9uPC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2NjYyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RnJlc2ggVmVnZXRhYmxlczwvdGV4dD48Y2lyY2xlIGN4PSI1MCIgY3k9IjEwMCIgcj0iMTUiIGZpbGw9IiNmZjY2MDAiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMTAiIHI9IjEyIiBmaWxsPSIjZmY5OTAwIi8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMTA1IiByPSIxMCIgZmlsbD0iI2ZmY2MwMCIvPjwvc3ZnPg==', caption: 'Fresh vegetables being prepared' },
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzY2NGQwMyIvPjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZpbmFsIEN1cnJ5PC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2NjYyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UmVhZHkgdG8gU2VydmU8L3RleHQ+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExMCIgcng9IjYwIiByeT0iMjAiIGZpbGw9IiNmZjk5MDAiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMTA1IiByeD0iNDAiIHJ5PSIxNSIgZmlsbD0iI2ZmNjYwMCIvPjwvc3ZnPg==', caption: 'Final prepared curry dish' }
+                ],
+                sampleVideos: [
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzMzMzMzMyIvPjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvb2tpbmcgVmlkZW88L3RleHQ+PHBvbHlnb24gcG9pbnRzPSI4MCw5MCA4MCwxMTAgMTIwLDEwMCIgZmlsbD0id2hpdGUiLz48L3N2Zz4=', caption: 'Cooking process video' }
+                ]
+            },
+            {
+                id: 1002,
+                foodType: "Fresh Bread & Pastries",
+                quantity: 30,
+                expiryDateTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+                location: "City Bakery - Store Front",
+                contact: "+91-9876543211",
+                description: "Assorted fresh bread, croissants, and pastries. Perfect for breakfast distribution.",
+                status: 'available',
+                donorName: "City Bakery",
+                donorEmail: "manager@citybakery.com",
+                createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                hasPhotos: true,
+                hasVideo: false,
+                mediaCount: 2,
+                qualityVerified: true,
+                targetAudience: ['general', 'children', 'students', 'homeless'],
+                samplePhotos: [
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y0ZTRiYyIvPjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NGQwMyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RnJlc2ggQnJlYWQ8L3RleHQ+PGVsbGlwc2UgY3g9IjcwIiBjeT0iMTAwIiByeD0iMjUiIHJ5PSIxNSIgZmlsbD0iI2Q2OWUyZSIvPjxlbGxpcHNlIGN4PSIxMzAiIGN5PSIxMDAiIHJ4PSIyNSIgcnk9IjE1IiBmaWxsPSIjZDY5ZTJlIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjEyMCIgcng9IjIwIiByeT0iMTAiIGZpbGw9IiNjZDg1M2YiLz48L3N2Zz4=', caption: 'Fresh baked bread and pastries' },
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2ZmZjJlNiIvPjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NGQwMyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QmFrZXJ5IERpc3BsYXk8L3RleHQ+PHJlY3QgeD0iNDAiIHk9IjkwIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZjRlNGJjIiBzdHJva2U9IiNkNjllMmUiIHN0cm9rZS13aWR0aD0iMiIvPjxjaXJjbGUgY3g9IjcwIiBjeT0iMTA1IiByPSI4IiBmaWxsPSIjZDY5ZTJlIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTA1IiByPSI4IiBmaWxsPSIjZDY5ZTJlIi8+PGNpcmNsZSBjeD0iMTMwIiBjeT0iMTA1IiByPSI4IiBmaWxsPSIjZDY5ZTJlIi8+PC9zdmc+', caption: 'Bakery display case' }
+                ]
+            },
+            {
+                id: 1003,
+                foodType: "Cooked Rice & Dal",
+                quantity: 100,
+                expiryDateTime: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+                location: "Community Kitchen - Sector 15",
+                contact: "+91-9876543212",
+                description: "Freshly cooked rice with dal (lentils). Nutritious and ready to serve meal.",
+                status: 'available',
+                donorName: "Community Kitchen",
+                donorEmail: "admin@communitykitchen.org",
+                createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                hasPhotos: false,
+                hasVideo: false,
+                mediaCount: 0,
+                qualityVerified: false,
+                targetAudience: ['general', 'vegetarian', 'vegan', 'homeless', 'students']
+            },
+            {
+                id: 1004,
+                foodType: "Fruit Salad & Desserts",
+                quantity: 40,
+                expiryDateTime: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
+                location: "Sweet Palace - Main Branch",
+                contact: "+91-9876543213",
+                description: "Fresh fruit salad and assorted Indian sweets. Great for children and elderly.",
+                status: 'available',
+                donorName: "Sweet Palace",
+                donorEmail: "orders@sweetpalace.com",
+                createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+                hasPhotos: true,
+                hasVideo: true,
+                mediaCount: 2,
+                qualityVerified: true,
+                targetAudience: ['children', 'elderly', 'general', 'vegetarian'],
+                samplePhotos: [
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2ZmZjVlZSIvPjx0ZXh0IHg9IjEwMCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NGQwMyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RnJ1aXQgU2FsYWQ8L3RleHQ+PGNpcmNsZSBjeD0iNjAiIGN5PSI4MCIgcj0iMTIiIGZpbGw9IiNmZjY2MDAiLz48Y2lyY2xlIGN4PSI5MCIgY3k9Ijc1IiByPSIxMCIgZmlsbD0iI2ZmOTkwMCIvPjxjaXJjbGUgY3g9IjEyMCIgY3k9Ijg1IiByPSIxMSIgZmlsbD0iI2ZmY2MwMCIvPjxjaXJjbGUgY3g9IjE0MCIgY3k9Ijc4IiByPSI5IiBmaWxsPSIjZmYzMzMzIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjEyMCIgcng9IjMwIiByeT0iMTAiIGZpbGw9IiNmZmU2Y2MiLz48L3N2Zz4=', caption: 'Fresh fruit salad' }
+                ],
+                sampleVideos: [
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzMzMzMzMyIvPjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRlc3NlcnQgUHJlcDwvdGV4dD48cG9seWdvbiBwb2ludHM9IjgwLDkwIDgwLDExMCAxMjAsMTAwIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==', caption: 'Dessert preparation video' }
+                ]
+            },
+            {
+                id: 1005,
+                foodType: "Chicken Biryani",
+                quantity: 60,
+                expiryDateTime: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
+                location: "Royal Restaurant - Kitchen",
+                contact: "+91-9876543214",
+                description: "Authentic chicken biryani with raita. Prepared with premium ingredients.",
+                status: 'available',
+                donorName: "Royal Restaurant",
+                donorEmail: "chef@royalrestaurant.com",
+                createdAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+                hasPhotos: true,
+                hasVideo: false,
+                mediaCount: 1,
+                qualityVerified: true,
+                targetAudience: ['general', 'students', 'homeless'],
+                samplePhotos: [
+                    { url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2ZmZjJlNiIvPjx0ZXh0IHg9IjEwMCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NGQwMyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2hpY2tlbiBCaXJ5YW5pPC90ZXh0PjxlbGxpcHNlIGN4PSIxMDAiIGN5PSI5MCIgcng9IjUwIiByeT0iMjUiIGZpbGw9IiNmZmNjMDAiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iODUiIHJ4PSI0MCIgcnk9IjIwIiBmaWxsPSIjZmY5OTAwIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjgwIiByeD0iMzAiIHJ5PSIxNSIgZmlsbD0iI2ZmNjYwMCIvPjxyZWN0IHg9Ijg1IiB5PSIxMTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIxNSIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==', caption: 'Authentic chicken biryani' }
+                ]
+            },
+            {
+                id: 1006,
+                foodType: "Sandwich & Snacks",
+                quantity: 25,
+                expiryDateTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+                location: "Quick Bites Cafe - Counter",
+                contact: "+91-9876543215",
+                description: "Vegetable sandwiches, samosas, and light snacks. Perfect for quick meals.",
+                status: 'available',
+                donorName: "Quick Bites Cafe",
+                donorEmail: "manager@quickbites.com",
+                createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+                hasPhotos: false,
+                hasVideo: false,
+                mediaCount: 0,
+                qualityVerified: false,
+                targetAudience: ['general', 'vegetarian', 'students', 'children']
+            }
+        ];
 
         // Demo credentials
         const validCredentials = {
@@ -312,6 +632,217 @@
                 organization: 'Community Food Network'
             }
         };
+
+        // Media Modal Functions
+        function openMediaModal(url, type, caption) {
+            const modal = document.getElementById('media-modal');
+            const container = document.getElementById('modal-media-container');
+            const captionDiv = document.getElementById('modal-caption');
+            
+            container.innerHTML = '';
+            
+            if (type === 'image') {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = caption;
+                img.onerror = function() {
+                    this.src = '';
+                    this.alt = 'Image failed to load';
+                    this.style.display = 'none';
+                };
+                container.appendChild(img);
+            } else if (type === 'video') {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.muted = false; // Allow sound in modal
+                video.style.maxWidth = '100%';
+                video.style.maxHeight = '80vh';
+                video.style.borderRadius = '8px';
+                video.preload = 'metadata';
+                video.crossOrigin = 'anonymous';
+                
+                // Add multiple source formats for better compatibility
+                const supportedFormats = [
+                    { type: 'video/mp4', codecs: 'avc1.42E01E, mp4a.40.2' },
+                    { type: 'video/webm', codecs: 'vp8, vorbis' },
+                    { type: 'video/webm', codecs: 'vp9, opus' },
+                    { type: 'video/ogg', codecs: 'theora, vorbis' }
+                ];
+                
+                // Try to determine the best format
+                let bestFormat = 'video/mp4';
+                for (const format of supportedFormats) {
+                    if (video.canPlayType(`${format.type}; codecs="${format.codecs}"`)) {
+                        bestFormat = format.type;
+                        break;
+                    }
+                }
+                
+                // Create source element for better format handling
+                const source = document.createElement('source');
+                source.src = url;
+                source.type = bestFormat;
+                video.appendChild(source);
+                
+                // Fallback: also set video.src directly
+                video.src = url;
+                
+                // Enhanced error handling
+                const showVideoError = (errorMsg) => {
+                    container.innerHTML = `
+                        <div style="color: white; text-align: center; padding: 40px; background: rgba(0,0,0,0.8); border-radius: 8px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">🎥</div>
+                            <h3 style="margin-bottom: 16px;">Video Playback Issue</h3>
+                            <p style="margin-bottom: 12px;">${errorMsg}</p>
+                            <div style="font-size: 14px; opacity: 0.8; margin-top: 16px; line-height: 1.5;">
+                                <p><strong>Supported formats:</strong> MP4, WebM, MOV</p>
+                                <p><strong>Recommended:</strong> MP4 with H.264 codec</p>
+                                <p style="margin-top: 12px;">Try recording in MP4 format for best compatibility</p>
+                            </div>
+                            <button onclick="closeMediaModal()" style="
+                                margin-top: 20px;
+                                padding: 10px 20px;
+                                background: #3b82f6;
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 14px;
+                            ">Close</button>
+                        </div>
+                    `;
+                };
+                
+                // Error handling for video
+                video.onerror = function(e) {
+                    console.error('Video error:', e);
+                    showVideoError('Video format not supported or file corrupted');
+                };
+                
+                source.onerror = function(e) {
+                    console.error('Source error:', e);
+                    showVideoError('Video format not supported by your browser');
+                };
+                
+                // Success handling
+                video.addEventListener('loadedmetadata', () => {
+                    console.log('Video metadata loaded successfully');
+                    // Show video info
+                    const infoDiv = document.createElement('div');
+                    infoDiv.style.cssText = `
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        background: rgba(0,0,0,0.7);
+                        color: white;
+                        padding: 8px 12px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        z-index: 1002;
+                    `;
+                    infoDiv.textContent = `${Math.round(video.duration)}s • ${video.videoWidth}x${video.videoHeight}`;
+                    container.style.position = 'relative';
+                    container.appendChild(infoDiv);
+                });
+                
+                video.addEventListener('canplay', () => {
+                    console.log('Video can start playing');
+                    // Try to play with user interaction fallback
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            console.log('Auto-play prevented, showing play button:', e);
+                            // Add a play button overlay if autoplay fails
+                            const playButton = document.createElement('div');
+                            playButton.style.cssText = `
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                background: rgba(0,0,0,0.8);
+                                color: white;
+                                padding: 20px;
+                                border-radius: 50%;
+                                cursor: pointer;
+                                font-size: 32px;
+                                z-index: 1001;
+                                border: 2px solid white;
+                                transition: all 0.3s ease;
+                            `;
+                            playButton.innerHTML = '▶️';
+                            playButton.onmouseover = () => {
+                                playButton.style.background = 'rgba(59, 130, 246, 0.9)';
+                                playButton.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                            };
+                            playButton.onmouseout = () => {
+                                playButton.style.background = 'rgba(0,0,0,0.8)';
+                                playButton.style.transform = 'translate(-50%, -50%) scale(1)';
+                            };
+                            playButton.onclick = () => {
+                                video.play().then(() => {
+                                    playButton.remove();
+                                }).catch(err => {
+                                    console.error('Manual play failed:', err);
+                                    showVideoError('Unable to play video. Please try a different format.');
+                                });
+                            };
+                            container.appendChild(playButton);
+                        });
+                    }
+                });
+                
+                // Handle loading states
+                video.addEventListener('loadstart', () => {
+                    const loadingDiv = document.createElement('div');
+                    loadingDiv.id = 'video-loading';
+                    loadingDiv.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        color: white;
+                        text-align: center;
+                        z-index: 1000;
+                    `;
+                    loadingDiv.innerHTML = `
+                        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                        <div>Loading video...</div>
+                    `;
+                    container.appendChild(loadingDiv);
+                });
+                
+                video.addEventListener('canplaythrough', () => {
+                    const loadingDiv = document.getElementById('video-loading');
+                    if (loadingDiv) loadingDiv.remove();
+                });
+                
+                container.appendChild(video);
+            }
+            
+            captionDiv.textContent = caption;
+            modal.classList.add('active');
+        }
+
+        function closeMediaModal() {
+            const modal = document.getElementById('media-modal');
+            const container = document.getElementById('modal-media-container');
+            
+            // Stop any playing videos
+            const videos = container.querySelectorAll('video');
+            videos.forEach(video => {
+                video.pause();
+                video.currentTime = 0;
+            });
+            
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('media-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMediaModal();
+            }
+        });
 
         // Page navigation
         function showPage(pageId) {
@@ -365,17 +896,17 @@
                 } else if (role === 'donor') {
                     document.getElementById('nav-donor').style.display = 'block';
                     showPage('donor');
-                    document.getElementById('donor-organization').textContent = Organization: ${currentUser.organization};
+                    document.getElementById('donor-organization').textContent = `Organization: ${currentUser.organization}`;
                 } else if (role === 'ngo') {
                     document.getElementById('nav-ngo').style.display = 'block';
                     showPage('ngo');
-                    document.getElementById('ngo-organization').textContent = Organization: ${currentUser.organization};
+                    document.getElementById('ngo-organization').textContent = `Organization: ${currentUser.organization}`;
                 }
                 
                 // Update user info
-                document.getElementById('user-info').textContent = ${currentUser.name} (${role.toUpperCase()});
+                document.getElementById('user-info').textContent = `${currentUser.name} (${role.toUpperCase()})`;
                 
-                showMessage(Welcome ${currentUser.name}! Successfully logged in as ${role.toUpperCase()}., 'success');
+                showMessage(`Welcome ${currentUser.name}! Successfully logged in as ${role.toUpperCase()}.`, 'success');
             } else {
                 showMessage('Invalid credentials. Please check your email, password, and role.', 'error');
             }
@@ -396,6 +927,191 @@
             showMessage('Logged out successfully.', 'info');
         }
 
+        // Camera and Media Functions
+        function openCamera(type) {
+            if (type === 'photo') {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.capture = 'environment';
+                input.onchange = function(e) {
+                    handleMediaFile(e.target.files[0], 'camera-photo');
+                };
+                input.click();
+            } else if (type === 'video') {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'video/*';
+                input.capture = 'environment';
+                input.onchange = function(e) {
+                    handleMediaFile(e.target.files[0], 'camera-video');
+                };
+                input.click();
+            }
+        }
+
+        function handleMediaFile(file, source) {
+            if (!file) return;
+            
+            const fileSize = file.size / (1024 * 1024); // Convert to MB
+            
+            // Check file size limits
+            if (file.type.startsWith('image/') && fileSize > 10) {
+                showMessage('Image file size should be less than 10MB', 'error');
+                return;
+            }
+            
+            if (file.type.startsWith('video/') && fileSize > 100) {
+                showMessage('Video file size should be less than 100MB', 'error');
+                return;
+            }
+            
+            // Enhanced video format validation
+            if (file.type.startsWith('video/')) {
+                const supportedVideoTypes = [
+                    'video/mp4',
+                    'video/webm',
+                    'video/ogg',
+                    'video/mov',
+                    'video/quicktime',
+                    'video/x-msvideo', // AVI
+                    'video/3gpp'       // 3GP
+                ];
+                
+                if (!supportedVideoTypes.includes(file.type.toLowerCase())) {
+                    showMessage(`Video format "${file.type}" may not be supported. Recommended: MP4, WebM, or MOV`, 'error');
+                    // Still allow upload but warn user
+                }
+                
+                // Additional check for common unsupported formats
+                const fileName = file.name.toLowerCase();
+                const unsupportedExtensions = ['.wmv', '.flv', '.mkv', '.m4v'];
+                const hasUnsupportedExt = unsupportedExtensions.some(ext => fileName.endsWith(ext));
+                
+                if (hasUnsupportedExt) {
+                    showMessage('This video format may not play in browsers. Please convert to MP4 for best compatibility.', 'error');
+                }
+            }
+            
+            // Store file reference
+            if (source === 'camera-photo' || source === 'final-photo') {
+                mediaFiles.finalPhoto = file;
+            } else if (source === 'preparation-photo') {
+                mediaFiles.preparationPhoto = file;
+            } else if (source === 'camera-video' || source === 'preparation-video') {
+                mediaFiles.preparationVideo = file;
+            }
+            
+            // Show preview
+            showMediaPreview(file, source);
+            
+            const fileTypeMsg = file.type.startsWith('image/') ? 'Photo' : 
+                               file.type.startsWith('video/') ? 'Video' : 'File';
+            showMessage(`${fileTypeMsg} added successfully! ${file.type.startsWith('video/') ? 'Format: ' + file.type : ''}`, 'success');
+        }
+
+        function showMediaPreview(file, source) {
+            const previewArea = document.getElementById('media-preview');
+            const previewContainer = document.getElementById('preview-container');
+            
+            previewArea.classList.remove('hidden');
+            
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'bg-white border border-gray-200 rounded-lg p-3';
+            
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-full h-32 object-cover rounded-lg mb-2';
+                previewDiv.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                const video = document.createElement('video');
+                const videoUrl = URL.createObjectURL(file);
+                video.src = videoUrl;
+                video.className = 'w-full h-32 object-cover rounded-lg mb-2';
+                video.controls = true;
+                video.muted = true; // Muted for preview
+                video.preload = 'metadata'; // Load metadata to show first frame
+                
+                // Set the video to show first frame as thumbnail
+                video.addEventListener('loadedmetadata', () => {
+                    video.currentTime = 0.1; // Show frame at 0.1 seconds
+                });
+                
+                // Store video data for NGO viewing
+                video.addEventListener('loadeddata', () => {
+                    // Create a canvas to capture the first frame as thumbnail
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0);
+                    const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // Store both video URL and thumbnail for NGO page
+                    if (source.includes('video')) {
+                        mediaFiles.preparationVideoData = {
+                            url: videoUrl,
+                            thumbnail: thumbnailUrl,
+                            file: file
+                        };
+                    }
+                });
+                
+                previewDiv.appendChild(video);
+            }
+            
+            const label = document.createElement('p');
+            label.className = 'text-xs text-gray-600 text-center';
+            label.textContent = source.includes('preparation') ? 'Preparation' : 
+                               source.includes('final') ? 'Final Food' : 'Documentation';
+            previewDiv.appendChild(label);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'w-full mt-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded hover:bg-red-200 transition-colors';
+            removeBtn.textContent = 'Remove';
+            removeBtn.onclick = function() {
+                previewDiv.remove();
+                // Clear the corresponding media file
+                if (source.includes('preparation') && source.includes('photo')) {
+                    mediaFiles.preparationPhoto = null;
+                } else if (source.includes('final')) {
+                    mediaFiles.finalPhoto = null;
+                } else if (source.includes('video')) {
+                    mediaFiles.preparationVideo = null;
+                    mediaFiles.preparationVideoData = null;
+                }
+                
+                // Hide preview area if no more previews
+                if (previewContainer.children.length === 0) {
+                    previewArea.classList.add('hidden');
+                }
+            };
+            previewDiv.appendChild(removeBtn);
+            
+            previewContainer.appendChild(previewDiv);
+        }
+
+        // File input handlers
+        document.getElementById('preparation-photo').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                handleMediaFile(e.target.files[0], 'preparation-photo');
+            }
+        });
+
+        document.getElementById('final-photo').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                handleMediaFile(e.target.files[0], 'final-photo');
+            }
+        });
+
+        document.getElementById('preparation-video').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                handleMediaFile(e.target.files[0], 'preparation-video');
+            }
+        });
+
         // Donor functionality
         document.getElementById('donation-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -409,11 +1125,27 @@
             const description = document.getElementById('description').value;
             
             // Validate future date
-            const expiryDateTime = new Date(${expiryDate}T${expiryTime});
+            const expiryDateTime = new Date(`${expiryDate}T${expiryTime}`);
             if (expiryDateTime <= new Date()) {
                 showMessage('Best before date and time must be in the future', 'error');
                 return;
             }
+
+            // Collect target audience
+            const targetAudience = [];
+            const audienceCheckboxes = document.querySelectorAll('input[type="checkbox"][id^="audience-"]:checked');
+            audienceCheckboxes.forEach(checkbox => {
+                targetAudience.push(checkbox.value);
+            });
+
+            if (targetAudience.length === 0) {
+                showMessage('Please select at least one target audience for your food donation', 'error');
+                return;
+            }
+            
+            // Check if at least one photo is provided (recommended)
+            const hasPhotos = mediaFiles.preparationPhoto || mediaFiles.finalPhoto;
+            const hasVideo = mediaFiles.preparationVideo;
             
             const donation = {
                 id: Date.now(),
@@ -426,8 +1158,70 @@
                 status: 'available',
                 donorName: currentUser.organization,
                 donorEmail: currentUser.email,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                hasPhotos: hasPhotos,
+                hasVideo: hasVideo,
+                mediaCount: (mediaFiles.preparationPhoto ? 1 : 0) + 
+                           (mediaFiles.finalPhoto ? 1 : 0) + 
+                           (mediaFiles.preparationVideo ? 1 : 0),
+                qualityVerified: hasPhotos || hasVideo,
+                targetAudience: targetAudience,
+                // Store actual media files for display
+                userPhotos: [],
+                userVideos: []
             };
+
+            // Add actual media files to donation for NGO viewing
+            if (mediaFiles.preparationPhoto) {
+                donation.userPhotos.push({
+                    url: URL.createObjectURL(mediaFiles.preparationPhoto),
+                    caption: 'Food preparation process'
+                });
+            }
+            if (mediaFiles.finalPhoto) {
+                donation.userPhotos.push({
+                    url: URL.createObjectURL(mediaFiles.finalPhoto),
+                    caption: 'Final prepared food'
+                });
+            }
+            if (mediaFiles.preparationVideo) {
+                const videoUrl = URL.createObjectURL(mediaFiles.preparationVideo);
+                
+                // Create thumbnail from video for NGO display
+                const video = document.createElement('video');
+                video.src = videoUrl;
+                video.muted = true;
+                video.preload = 'metadata';
+                
+                video.addEventListener('loadeddata', () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = video.videoWidth || 320;
+                    canvas.height = video.videoHeight || 240;
+                    
+                    video.currentTime = 0.5; // Get frame at 0.5 seconds
+                    video.addEventListener('seeked', () => {
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        
+                        // Update the donation with thumbnail
+                        const donationToUpdate = donations.find(d => d.id === donation.id);
+                        if (donationToUpdate && donationToUpdate.userVideos) {
+                            const videoEntry = donationToUpdate.userVideos.find(v => v.url === videoUrl);
+                            if (videoEntry) {
+                                videoEntry.thumbnail = thumbnailUrl;
+                            }
+                        }
+                    }, { once: true });
+                }, { once: true });
+                
+                donation.userVideos.push({
+                    url: videoUrl,
+                    caption: 'Preparation video',
+                    thumbnail: null, // Will be set asynchronously
+                    file: mediaFiles.preparationVideo
+                });
+            }
             
             donations.push(donation);
             
@@ -436,17 +1230,29 @@
             platformStats.activeDonors = Math.max(platformStats.activeDonors, donations.length);
             
             // Send notification to ReSave platform and NGOs
-            const notificationMessage = 🍽️ New donation: ${quantity} portions of ${foodType} from ${currentUser.organization};
+            const mediaInfo = hasPhotos || hasVideo ? ' with quality documentation' : '';
+            const notificationMessage = `🍽️ New donation: ${quantity} portions of ${foodType} from ${currentUser.organization}${mediaInfo}`;
             addNotification(notificationMessage);
             
-            // Clear form
+            // Clear form and media
             document.getElementById('donation-form').reset();
+            // Clear all audience checkboxes
+            document.querySelectorAll('input[type="checkbox"][id^="audience-"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            mediaFiles = { preparationPhoto: null, finalPhoto: null, preparationVideo: null, preparationVideoData: null };
+            document.getElementById('media-preview').classList.add('hidden');
+            document.getElementById('preview-container').innerHTML = '';
             
             // Update displays
             renderDonations();
             updateDashboard();
             
-            showMessage('Food donation added successfully! ReSave platform and NGOs have been notified.', 'success');
+            const successMessage = hasPhotos || hasVideo ? 
+                'Food donation with quality documentation added successfully! This builds trust with NGOs.' :
+                'Food donation added successfully! Consider adding photos next time to build more trust with NGOs.';
+            
+            showMessage(successMessage, 'success');
         });
 
         function renderDonations() {
@@ -465,8 +1271,15 @@
             donationsList.innerHTML = donations.map(donation => `
                 <div class="border border-gray-200 rounded-lg p-6">
                     <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h4 class="font-semibold text-lg text-gray-900">${donation.foodType}</h4>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="font-semibold text-lg text-gray-900">${donation.foodType}</h4>
+                                ${donation.qualityVerified ? `
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium flex items-center gap-1">
+                                        ✅ Quality Verified
+                                    </span>
+                                ` : ''}
+                            </div>
                             <p class="text-gray-600">${donation.quantity} portions</p>
                             <p class="text-sm text-gray-500 mt-1">
                                 <strong>Location:</strong> ${donation.location}
@@ -477,7 +1290,44 @@
                             <p class="text-sm text-gray-500">
                                 <strong>Best Before:</strong> ${new Date(donation.expiryDateTime).toLocaleString()}
                             </p>
-                            ${donation.description ? <p class="text-sm text-gray-500 mt-2">${donation.description}</p> : ''}
+                            ${donation.description ? `<p class="text-sm text-gray-500 mt-2">${donation.description}</p>` : ''}
+                            
+                            ${donation.targetAudience && donation.targetAudience.length > 0 ? `
+                                <div class="mt-3 p-2 bg-purple-50 rounded-lg">
+                                    <p class="text-xs font-medium text-purple-800 mb-1">👥 Target Audience:</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        ${donation.targetAudience.map(audience => {
+                                            const audienceLabels = {
+                                                'general': '👨‍👩‍👧‍👦 General',
+                                                'children': '👶 Children',
+                                                'elderly': '👴 Elderly',
+                                                'diabetic': '🩺 Diabetic-Friendly',
+                                                'vegetarian': '🥬 Vegetarian',
+                                                'vegan': '🌱 Vegan',
+                                                'pregnant': '🤱 Pregnant Women',
+                                                'lactose-free': '🥛 Lactose-Free',
+                                                'gluten-free': '🌾 Gluten-Free',
+                                                'low-sodium': '🧂 Low Sodium',
+                                                'homeless': '🏠 Homeless Shelters',
+                                                'students': '🎓 Students'
+                                            };
+                                            return `<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">${audienceLabels[audience] || audience}</span>`;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${donation.qualityVerified ? `
+                                <div class="mt-3 flex items-center gap-4 text-xs text-blue-600">
+                                    ${donation.hasPhotos ? `<span class="flex items-center gap-1">📸 Photos Included</span>` : ''}
+                                    ${donation.hasVideo ? `<span class="flex items-center gap-1">🎥 Video Included</span>` : ''}
+                                    <span class="text-gray-500">${donation.mediaCount} file(s)</span>
+                                </div>
+                            ` : `
+                                <div class="mt-3 text-xs text-orange-600">
+                                    💡 Consider adding photos/videos next time to build more trust with NGOs
+                                </div>
+                            `}
                         </div>
                         <span class="px-3 py-1 rounded-full text-sm font-medium ${
                             donation.status === 'available' ? 'bg-green-100 text-green-800' :
@@ -570,9 +1420,21 @@
 
         function renderAvailableFood() {
             const availableFoodList = document.getElementById('available-food-list');
-            const availableDonations = donations.filter(d => d.status === 'available');
+            const audienceFilter = document.getElementById('audience-filter');
+            const selectedAudience = audienceFilter ? audienceFilter.value : '';
             
-            if (availableDonations.length === 0) {
+            // Combine user donations and sample donations
+            const userDonations = donations.filter(d => d.status === 'available');
+            let allAvailableDonations = [...userDonations, ...sampleDonations.filter(d => d.status === 'available')];
+            
+            // Apply audience filter
+            if (selectedAudience) {
+                allAvailableDonations = allAvailableDonations.filter(donation => 
+                    donation.targetAudience && donation.targetAudience.includes(selectedAudience)
+                );
+            }
+            
+            if (allAvailableDonations.length === 0) {
                 availableFoodList.innerHTML = `
                     <div class="col-span-full text-center py-12">
                         <div class="text-4xl mb-4">🍽️</div>
@@ -583,10 +1445,21 @@
                 return;
             }
             
-            availableFoodList.innerHTML = availableDonations.map(donation => `
-                <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            availableFoodList.innerHTML = allAvailableDonations.map(donation => `
+                <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow ${donation.qualityVerified ? 'border-green-200 bg-green-50' : ''}">
                     <div class="mb-4">
-                        <h4 class="font-semibold text-lg text-gray-900">${donation.foodType}</h4>
+                        <div class="flex items-center gap-2 mb-2">
+                            <h4 class="font-semibold text-lg text-gray-900">${donation.foodType}</h4>
+                            ${donation.qualityVerified ? `
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                                    ✅ Quality Verified
+                                </span>
+                            ` : `
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">
+                                    ⚠️ No Documentation
+                                </span>
+                            `}
+                        </div>
                         <p class="text-gray-600">${donation.quantity} portions available</p>
                         <p class="text-sm text-gray-500 mt-2">
                             <strong>From:</strong> ${donation.donorName}
@@ -600,15 +1473,89 @@
                         <p class="text-sm text-gray-500">
                             <strong>Best Before:</strong> ${new Date(donation.expiryDateTime).toLocaleString()}
                         </p>
-                        ${donation.description ? <p class="text-sm text-gray-500 mt-2 italic">${donation.description}</p> : ''}
+                        ${donation.description ? `<p class="text-sm text-gray-500 mt-2 italic">${donation.description}</p>` : ''}
+                        
+                        ${donation.targetAudience && donation.targetAudience.length > 0 ? `
+                            <div class="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                <p class="text-xs font-medium text-purple-800 mb-2">👥 Suitable For:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${donation.targetAudience.map(audience => {
+                                        const audienceLabels = {
+                                            'general': '👨‍👩‍👧‍👦 General Public',
+                                            'children': '👶 Children',
+                                            'elderly': '👴 Elderly',
+                                            'diabetic': '🩺 Diabetic-Friendly',
+                                            'vegetarian': '🥬 Vegetarian',
+                                            'vegan': '🌱 Vegan',
+                                            'pregnant': '🤱 Pregnant Women',
+                                            'lactose-free': '🥛 Lactose-Free',
+                                            'gluten-free': '🌾 Gluten-Free',
+                                            'low-sodium': '🧂 Low Sodium',
+                                            'homeless': '🏠 Homeless Shelters',
+                                            'students': '🎓 Students'
+                                        };
+                                        return `<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">${audienceLabels[audience] || audience}</span>`;
+                                    }).join('')}
+                                </div>
+                                <p class="text-xs text-purple-600 mt-2 italic">This food has been specifically prepared considering the dietary needs of these groups.</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${donation.qualityVerified ? `
+                            <div class="mt-3 p-3 bg-white rounded-lg border border-green-200">
+                                <p class="text-xs font-medium text-green-800 mb-3">📸 Quality Documentation Available:</p>
+                                <div class="flex items-center gap-4 text-xs text-green-700 mb-3">
+                                    ${donation.hasPhotos ? `<span class="flex items-center gap-1">📷 Photos of food preparation & final result</span>` : ''}
+                                    ${donation.hasVideo ? `<span class="flex items-center gap-1">🎥 Video documentation</span>` : ''}
+                                </div>
+                                
+                                <!-- Media Gallery -->
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+                                    ${(donation.samplePhotos || donation.userPhotos || []).map(photo => `
+                                        <div class="relative group cursor-pointer" onclick="openMediaModal('${photo.url}', 'image', '${photo.caption}')">
+                                            <img src="${photo.url}" alt="${photo.caption}" class="w-full h-20 object-cover rounded-lg border border-gray-200 hover:border-green-400 transition-colors">
+                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded-lg flex items-center justify-center">
+                                                <span class="text-white opacity-0 group-hover:opacity-100 text-xs">🔍 View</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                    ${(donation.sampleVideos || donation.userVideos || []).map(video => `
+                                        <div class="relative group cursor-pointer" onclick="openMediaModal('${video.url}', 'video', '${video.caption}')">
+                                            ${video.thumbnail ? `
+                                                <img src="${video.thumbnail}" alt="${video.caption}" class="w-full h-20 object-cover rounded-lg border border-gray-200 hover:border-green-400 transition-colors">
+                                            ` : `
+                                                <div class="w-full h-20 bg-gray-800 rounded-lg border border-gray-200 hover:border-green-400 transition-colors flex items-center justify-center">
+                                                    <span class="text-white text-2xl">🎥</span>
+                                                </div>
+                                            `}
+                                            <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-50 transition-opacity rounded-lg flex items-center justify-center">
+                                                <span class="text-white text-2xl">▶️</span>
+                                                <span class="text-white opacity-0 group-hover:opacity-100 text-xs ml-2">🎥 Play</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                
+                                <p class="text-xs text-green-600 italic">This donor has provided visual proof of food quality and freshness. Click images/videos to view full size.</p>
+                            </div>
+                        ` : `
+                            <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <p class="text-xs text-yellow-800">⚠️ No visual documentation provided. Please verify food quality upon pickup.</p>
+                            </div>
+                        `}
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
                             Available
                         </span>
-                        <button onclick="claimFood(${donation.id})" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
-                            Claim Food
-                        </button>
+                        ${donation.id >= 1000 ? 
+                            `<button onclick="claimSampleFood(this, '${donation.foodType}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                Claim Food
+                            </button>` :
+                            `<button onclick="claimFood(${donation.id})" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                Claim Food
+                            </button>`
+                        }
                     </div>
                 </div>
             `).join('');
@@ -624,8 +1571,36 @@
                 renderAvailableFood();
                 renderDonations();
                 
-                showMessage(Successfully claimed ${donation.foodType}! Please coordinate pickup with ${donation.donorName}., 'success');
+                showMessage(`Successfully claimed ${donation.foodType}! Please coordinate pickup with ${donation.donorName}.`, 'success');
             }
+        }
+
+        function claimSampleFood(button, foodName) {
+            const card = button.closest('.border');
+            
+            // Find and update the sample donation
+            const sampleDonation = sampleDonations.find(d => d.foodType === foodName && d.status === 'available');
+            if (sampleDonation) {
+                sampleDonation.status = 'claimed';
+                sampleDonation.claimedBy = currentUser ? currentUser.organization : 'Community Food Network';
+                sampleDonation.claimedAt = new Date().toISOString();
+            }
+            
+            // Update UI
+            const statusSpan = card.querySelector('span');
+            statusSpan.textContent = 'Claimed';
+            statusSpan.className = 'px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium';
+            
+            button.textContent = 'Claimed';
+            button.disabled = true;
+            button.className = 'bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed';
+            
+            // Update admin dashboard if needed
+            if (currentPage === 'dashboard') {
+                updateDashboard();
+            }
+            
+            showMessage(`Successfully claimed ${foodName}! Please coordinate pickup with the donor.`, 'success');
         }
 
         // Dashboard functionality
@@ -636,6 +1611,94 @@
             document.getElementById('success-rate').textContent = platformStats.successRate + '%';
             
             renderRecentDonations();
+            renderAllDonationsTable();
+            renderNgoClaimsSummary();
+        }
+
+        function renderAllDonationsTable() {
+            const tableBody = document.getElementById('all-donations-table');
+            
+            // Combine user donations and sample donations for admin view
+            const allDonations = [...donations, ...sampleDonations];
+            
+            if (allDonations.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            No donations data available yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tableBody.innerHTML = allDonations.map(donation => `
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-900">${donation.foodType}</td>
+                    <td class="px-6 py-4 text-gray-700">${donation.donorName}</td>
+                    <td class="px-6 py-4 text-gray-700">${donation.quantity} portions</td>
+                    <td class="px-6 py-4 text-gray-700">${donation.location}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${
+                            donation.status === 'available' ? 'bg-green-100 text-green-800' :
+                            donation.status === 'claimed' ? 'bg-blue-100 text-blue-800' :
+                            'bg-red-100 text-red-800'
+                        }">
+                            ${donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-700">${new Date(donation.createdAt).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 text-gray-700">${donation.claimedBy || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderNgoClaimsSummary() {
+            const summaryContainer = document.getElementById('ngo-claims-summary');
+            
+            // Get claimed donations
+            const claimedDonations = [...donations, ...sampleDonations].filter(d => d.status === 'claimed');
+            
+            if (claimedDonations.length === 0) {
+                summaryContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <div class="text-4xl mb-4">🤝</div>
+                        <p class="text-gray-600">No NGO claims recorded yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group by NGO
+            const ngoGroups = {};
+            claimedDonations.forEach(donation => {
+                const ngo = donation.claimedBy || 'Unknown NGO';
+                if (!ngoGroups[ngo]) {
+                    ngoGroups[ngo] = [];
+                }
+                ngoGroups[ngo].push(donation);
+            });
+            
+            summaryContainer.innerHTML = Object.entries(ngoGroups).map(([ngo, claims]) => `
+                <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                    <h4 class="font-semibold text-blue-900 mb-3">${ngo}</h4>
+                    <div class="space-y-2">
+                        ${claims.map(claim => `
+                            <div class="text-sm text-blue-800">
+                                <strong>${claim.foodType}</strong> (${claim.quantity} portions)
+                                <div class="text-xs text-blue-600">
+                                    From: ${claim.donorName} • ${new Date(claim.claimedAt || claim.createdAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-blue-200">
+                        <div class="text-sm font-medium text-blue-900">
+                            Total Claims: ${claims.length} • Total Portions: ${claims.reduce((sum, c) => sum + c.quantity, 0)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function renderRecentDonations() {
@@ -726,10 +1789,16 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('expiry-date').setAttribute('min', today);
             
+            // Add audience filter event listener
+            const audienceFilter = document.getElementById('audience-filter');
+            if (audienceFilter) {
+                audienceFilter.addEventListener('change', renderAvailableFood);
+            }
+            
             renderDonations();
             renderNotifications();
             updateDashboard();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99629c4710ecc795',t:'MTc2MTc0MDI1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9965abb9a1197f8a',t:'MTc2MTc3MjM0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
